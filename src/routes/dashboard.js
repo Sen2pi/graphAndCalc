@@ -348,6 +348,8 @@ router.post('/structure/:structureId/generate-statistics', async (req, res) => {
         switch (property.type) {
           case 'text':
           case 'richText':
+          case 'entity_title':
+          case 'entity_description':
             statistics.propertyStatistics[propertyId] = {
               type: 'text',
               totalEntries: Math.floor(Math.random() * 100) + 10,
@@ -372,6 +374,9 @@ router.post('/structure/:structureId/generate-statistics', async (req, res) => {
 
           case 'date':
           case 'dateTime':
+          case 'datetime':
+          case 'entity_createdAt':
+          case 'entity_lastUpdated':
             statistics.propertyStatistics[propertyId] = {
               type: 'temporal',
               totalEntries: Math.floor(Math.random() * 100) + 10,
@@ -394,12 +399,33 @@ router.post('/structure/:structureId/generate-statistics', async (req, res) => {
             break;
 
           case 'object':
+          case 'entity':
+          case 'entity_tags':
             statistics.propertyStatistics[propertyId] = {
               type: 'relationship',
               totalReferences: Math.floor(Math.random() * 50) + 5,
               uniqueTargets: Math.floor(Math.random() * 30) + 3,
-              referencedStructures: [property.structureId || 'unknown'],
+              referencedStructures: [property.structureId || 'mixed'],
               networkData: generateMockNetworkData()
+            };
+            break;
+
+          case 'blocks':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'content',
+              totalEntries: Math.floor(Math.random() * 100) + 10,
+              averageBlocks: Math.floor(Math.random() * 20) + 5,
+              blockTypes: ['text', 'image', 'link', 'table', 'code'],
+              contentAnalysis: generateMockContentAnalysis()
+            };
+            break;
+
+          case 'entity_icon':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'icon',
+              totalEntries: Math.floor(Math.random() * 100) + 10,
+              uniqueIcons: Math.floor(Math.random() * 50) + 10,
+              iconDistribution: generateMockIconDistribution()
             };
             break;
 
