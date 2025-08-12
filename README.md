@@ -1,6 +1,11 @@
-# 📊 Dashboard Estatístico - Capacities
+# StatDash 📊
 
-Um dashboard estatístico completo para análise de dados do [Capacities](https://capacities.io), com gráficos interativos, estatísticas detalhadas e análises avançadas de objetos, coleções e propriedades.
+> **A powerful statistical dashboard extension for Capacities**  
+> Transform your knowledge base into actionable insights with advanced analytics, interactive charts, and comprehensive data analysis.
+
+![StatDash Logo](logo.png)
+
+*StatDash provides deep analytics for your Capacities workspace, offering statistical insights, object relationship mapping, and temporal analysis through an intuitive web interface.*
 
 ## 🚀 Funcionalidades
 
