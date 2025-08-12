@@ -7,80 +7,94 @@
 
 *StatDash provides deep analytics for your Capacities workspace, offering statistical insights, object relationship mapping, and temporal analysis through an intuitive web interface.*
 
-## 🚀 Funcionalidades
+## ✨ Features
 
-### 📈 Estatísticas Gerais
-- **Visão geral do espaço**: Total de estruturas, objetos e coleções
-- **Top estruturas**: Ranking das estruturas com mais objetos
-- **Gráficos interativos**: Visualizações de dados usando Chart.js
+### 📊 **Core Analytics**
+- **Workspace Overview**: Total structures, objects, and collections
+- **Top Structures**: Ranking of structures by object count
+- **Interactive Charts**: Data visualizations powered by Chart.js
+- **Real-time Updates**: Live data refresh and monitoring
 
-### 🔍 Análises Específicas
-- **Propriedades numéricas**: Média, mediana, desvio padrão, valores min/max
-- **Referências entre objetos**: Mapeamento de conexões e dependências
-- **Atividade temporal**: Análise de criação e modificação de objetos
-- **Comparação entre estruturas**: Análise comparativa de diferentes tipos
+### 🔍 **Advanced Analysis**
+- **Numeric Properties**: Mean, median, standard deviation, min/max values
+- **Object Relationships**: Mapping connections and dependencies
+- **Temporal Activity**: Creation and modification pattern analysis
+- **Structure Comparison**: Comparative analysis across different types
 
-### 🌐 Interface Web
-- **Dashboard responsivo**: Interface moderna e adaptável
-- **Gráficos interativos**: Gráficos de barras e linha com Chart.js
-- **Filtros avançados**: Seleção de estruturas e tipos de análise
-- **Atualização em tempo real**: Botão de refresh para dados atualizados
+### 🎨 **Modern Interface**
+- **Responsive Dashboard**: Modern, adaptive interface design
+- **Interactive Visualizations**: Bar charts, line graphs, and statistical displays
+- **Advanced Filtering**: Structure selection and analysis type filtering
+- **Real-time Data**: Live updates and dynamic content loading
 
-## 🛠️ Tecnologias
+## 🛠️ Tech Stack
 
-- **Backend**: Node.js + Express
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
-- **Gráficos**: Chart.js
-- **HTTP Client**: Axios
-- **Utilitários**: Lodash, date-fns
+| Category | Technology |
+|----------|------------|
+| **Backend** | Node.js + Express |
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
+| **Charts** | Chart.js + Chart.js Adapter Date-fns |
+| **HTTP Client** | Axios |
+| **Utilities** | Lodash, Date-fns |
+| **Development** | Nodemon, Jest |
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-- Node.js 16+ 
-- Token de acesso da API do Capacities
-- ID do espaço Capacities
+- **Node.js** 16+ 
+- **Capacities API Access Token**
+- **Capacities Space ID**
+- **Modern web browser** (Chrome, Firefox, Safari, Edge)
 
-## ⚙️ Instalação
+## ⚙️ Installation
 
-1. **Clone o repositório**
+### 🚀 Quick Start
+
+1. **Clone the repository**
 ```bash
 git clone https://github.com/Sen2pi/graphAndCalc.git
 cd graphAndCalc
 ```
 
-2. **Instale as dependências**
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. **Configure as variáveis de ambiente**
+3. **Configure environment variables**
 ```bash
-# Copie o arquivo de exemplo
+# Copy the example file
 cp env.example .env
 
-# Edite o arquivo .env com suas credenciais
-CAPACITIES_API_TOKEN=seu_token_aqui
-CAPACITIES_SPACE_ID=seu_space_id_aqui
+# Edit .env with your credentials
+CAPACITIES_API_TOKEN=your_access_token_here
+CAPACITIES_SPACE_ID=your_space_id_here
 CAPACITIES_API_BASE_URL=https://api.capacities.io
 PORT=3000
 ```
 
-4. **Inicie o servidor**
+4. **Start the server**
 ```bash
 npm start
 ```
 
-## 🔑 Obtenção do Token da API
+### 🔧 Development Mode
+```bash
+npm run dev
+```
 
-1. Abra o aplicativo desktop do Capacities
-2. Vá para `Settings` > `Capacities API`
-3. Gere um novo token de acesso
-4. **⚠️ Importante**: Mantenha este token seguro e não o compartilhe
+## 🔑 API Setup
 
-## 🔍 Obtenção do ID do Espaço
+### 📱 Getting Your API Token
 
-1. No aplicativo Capacities, vá para `Settings` > `Space settings`
-2. O ID do espaço será exibido na seção de configurações
+1. Open the Capacities desktop application
+2. Navigate to `Settings` > `Capacities API`
+3. Generate a new access token
+4. **⚠️ Important**: Keep this token secure and never share it
+
+### 🏠 Getting Your Space ID
+
+1. In the Capacities app, go to `Settings` > `Space settings`
+2. The Space ID will be displayed in the settings section
 
 ## 📡 Endpoints da API
 
