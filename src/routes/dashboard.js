@@ -29,13 +29,21 @@ router.get('/test', async (req, res) => {
 // Rota principal do dashboard
 router.get('/', async (req, res) => {
   try {
+    console.log('🔄 Generating full report...');
     const report = await analyticsService.generateFullReport();
+    
+    console.log('📊 Report generated:', {
+      spaceStructures: report.space?.structures ? Object.keys(report.space.structures).length : 0,
+      structuresData: report.space?.structures ? Object.keys(report.space.structures) : []
+    });
+    
     res.json({
       success: true,
       data: report,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
+    console.error('❌ Error generating report:', error);
     res.status(500).json({
       success: false,
       error: error.message,

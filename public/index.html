@@ -559,15 +559,23 @@
 
         async function loadWorkspaceData() {
             try {
+                console.log('🔄 Loading workspace data...');
                 const response = await fetch('/api/dashboard');
                 const data = await response.json();
                 
+                console.log('📊 Received data:', data);
+                
                 if (data.success) {
                     currentData = data.data;
+                    console.log('🏗️ Space data:', data.data.space);
+                    console.log('🏗️ Structures data:', data.data.space.structures);
+                    
                     displayWorkspaceOverview(data.data.space);
                     populateStructureSelect(data.data.space.structures);
                     createObjectsChart(data.data.space.structures);
                     createTimelineChart();
+                } else {
+                    console.error('❌ API returned error:', data.error);
                 }
             } catch (error) {
                 console.error('Error loading workspace data:', error);
@@ -605,15 +613,64 @@
         }
 
         function populateStructureSelect(structures) {
+            console.log('🔍 Populating structure select with:', structures);
+            
             const select = document.getElementById('structureSelect');
             select.innerHTML = '<option value="">Select a structure...</option>';
             
+            if (!structures || Object.keys(structures).length === 0) {
+                console.log('⚠️ No structures data available');
+                select.innerHTML = '<option value="">No structures available</option>';
+                return;
+            }
+            
+            let count = 0;
             Object.entries(structures).forEach(([id, structure]) => {
+                console.log(`📋 Structure ${count + 1}:`, { id, structure });
+                
                 const option = document.createElement('option');
                 option.value = id;
-                option.textContent = `${structure.name || id} (${structure.count || 0} objects)`;
+                // Mostrar o nome amigável da estrutura
+                const displayName = structure.name || structure.id;
+                option.textContent = displayName;
+                option.title = `ID: ${id} | Type: ${structure.type || 'N/A'}`; // Tooltip com o ID para referência
                 select.appendChild(option);
+                count++;
             });
+            
+            console.log(`✅ Populated ${count} structures in dropdown`);
+            
+            // Atualizar também a análise de estrutura
+            updateStructureAnalysis();
+        }
+
+        function updateStructureAnalysis() {
+            const container = document.getElementById('structureAnalysis');
+            
+            if (!currentData || !currentData.space.structures) {
+                container.innerHTML = '<p class="loading">No structure data available</p>';
+                return;
+            }
+            
+            const structures = currentData.space.structures;
+            const structureList = Object.entries(structures)
+                .map(([id, structure]) => `
+                    <div class="stat-item">
+                        <div class="stat-number">${structure.name || structure.id}</div>
+                        <div class="stat-label">${structure.id}</div>
+                    </div>
+                `)
+                .join('');
+            
+            container.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-value">${Object.keys(structures).length}</div>
+                    <div class="metric-label">Available Structures</div>
+                </div>
+                <div class="stats-grid">
+                    ${structureList}
+                </div>
+            `;
         }
 
         function createObjectsChart(structures) {
@@ -623,8 +680,9 @@
                 charts.objectsChart.destroy();
             }
 
+            // Como não temos contagem de objetos, vamos mostrar as estruturas disponíveis
             const labels = Object.values(structures).map(s => s.name || s.id).slice(0, 10);
-            const data = Object.values(structures).map(s => s.count || 0).slice(0, 10);
+            const data = Object.values(structures).map(() => 1); // Cada estrutura vale 1 para mostrar distribuição
 
             charts.objectsChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -649,6 +707,13 @@
                             labels: {
                                 padding: 20,
                                 usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': Available Structure';
+                                }
                             }
                         }
                     }

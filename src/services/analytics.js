@@ -10,6 +10,8 @@ class AnalyticsService {
     try {
       const spaceInfo = await this.api.getSpaceInfo();
       
+      console.log('🏗️ Raw space info:', spaceInfo);
+      
       const stats = {
         totalStructures: spaceInfo.structures?.length || 0,
         totalCollections: 0,
@@ -19,29 +21,63 @@ class AnalyticsService {
         recentActivity: []
       };
 
-      // Contar objetos por estrutura
-      for (const structure of spaceInfo.structures || []) {
-        try {
-          const objects = await this.api.getObjectsByStructure(structure.id, 1000);
-          const objectCount = objects.objects?.length || 0;
-          
+      // Usar apenas os dados disponíveis da API (sem tentar buscar objetos)
+      if (spaceInfo.structures && Array.isArray(spaceInfo.structures)) {
+        for (const structure of spaceInfo.structures) {
+          // Como não podemos contar objetos ainda, vamos usar dados básicos
           stats.structures[structure.id] = {
-            name: structure.name,
-            count: objectCount,
-            type: structure.type
+            name: structure.name || structure.id,
+            count: 0, // Não disponível ainda
+            type: structure.type || 'unknown',
+            id: structure.id
           };
           
-          stats.totalObjects += objectCount;
-        } catch (error) {
-          console.warn(`Não foi possível contar objetos da estrutura ${structure.id}:`, error.message);
+                  // Usar o título real da API, com fallback para nomes conhecidos
+        if (structure.title) {
+          stats.structures[structure.id].name = structure.title;
+        } else if (structure.id === 'RootPage') {
+          stats.structures[structure.id].name = 'Pages';
+        } else if (structure.id === 'RootDatabase') {
+          stats.structures[structure.id].name = 'Collections';
+          stats.totalCollections++;
+        } else if (structure.id === 'MediaImage') {
+          stats.structures[structure.id].name = 'Images';
+        } else if (structure.id === 'MediaPDF') {
+          stats.structures[structure.id].name = 'PDFs';
+        } else if (structure.id === 'RootTag') {
+          stats.structures[structure.id].name = 'Tags';
+        } else if (structure.id === 'RootQuery') {
+          stats.structures[structure.id].name = 'Queries';
+        } else if (structure.id === 'RootAIChat') {
+          stats.structures[structure.id].name = 'AI Chats';
+        } else if (structure.id === 'RootSimpleTable') {
+          stats.structures[structure.id].name = 'Tables';
+        } else if (structure.id === 'RootDailyNote') {
+          stats.structures[structure.id].name = 'Daily Notes';
+        } else if (structure.id === 'MediaAudio') {
+          stats.structures[structure.id].name = 'Audio Files';
+        } else if (structure.id === 'MediaVideo') {
+          stats.structures[structure.id].name = 'Video Files';
+        } else if (structure.id === 'MediaWebResource') {
+          stats.structures[structure.id].name = 'Web Links';
+        } else if (structure.id === 'MediaFile') {
+          stats.structures[structure.id].name = 'Files';
+        } else if (structure.id === 'MediaTweet') {
+          stats.structures[structure.id].name = 'Tweets';
+        } else if (structure.id === 'RootStructure') {
+          stats.structures[structure.id].name = 'Object Types';
+        } else if (structure.id === 'RootSpace') {
+          stats.structures[structure.id].name = 'Spaces';
+        }
         }
       }
 
-      // Ordenar estruturas por número de objetos
+      // Ordenar estruturas por nome para facilitar navegação
       stats.topStructures = Object.entries(stats.structures)
-        .sort(([,a], [,b]) => b.count - a.count)
+        .sort(([,a], [,b]) => a.name.localeCompare(b.name))
         .slice(0, 10);
 
+      console.log('📊 Processed stats:', stats);
       return stats;
     } catch (error) {
       console.error('Erro ao calcular estatísticas do espaço:', error.message);
