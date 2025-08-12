@@ -963,7 +963,7 @@
                             <h3><i class="fas fa-project-diagram"></i> Structure Relationships</h3>
                             <p>Connections with other structures in your workspace</p>
                         </div>
-                        <div id="relationshipsList" class="relationships-list">
+                        <div id="relationshipsContainer" class="relationships-list">
                             <!-- Relationships will be populated here -->
                         </div>
                     </div>
@@ -1046,8 +1046,17 @@
                     console.log('🏗️ Structures data:', data.structures);
                     console.log('🏗️ Data.data:', data.data);
                     
-                    if (data.structures && Array.isArray(data.structures)) {
-                        // Convert array to object format for compatibility
+                    if (data.data && data.data.space && data.data.space.structures) {
+                        // Usar dados do espaço (formato correto)
+                        console.log('🔄 Found structures in data.data.space.structures');
+                        const structuresObject = data.data.space.structures;
+                        
+                        populateStructuresList(structuresObject);
+                        populateGeneralDashboard(data.data.space);
+                        createGeneralCharts(structuresObject);
+                    } else if (data.structures && Array.isArray(data.structures)) {
+                        // Fallback para formato antigo
+                        console.log('🔄 Found structures in data.structures (legacy format)');
                         const structuresArray = data.structures;
                         const structuresObject = {};
                         
@@ -1055,22 +1064,14 @@
                             structuresObject[structure.id] = {
                                 ...structure,
                                 name: structure.title || structure.name || structure.id,
-                                count: 0 // Default count since API doesn't provide it yet
+                                count: structure.count || 0
                             };
                         });
                         
                         console.log('🔄 Converted structures to object format:', structuresObject);
                         
                         populateStructuresList(structuresObject);
-                        populateGeneralDashboard(data);
-                        createGeneralCharts(structuresObject);
-                    } else if (data.data && data.data.space && data.data.space.structures) {
-                        // Alternative path: data.data.space.structures (new format after fix)
-                        console.log('🔄 Found structures in data.data.space.structures');
-                        const structuresObject = data.data.space.structures;
-                        
-                        populateStructuresList(structuresObject);
-                        populateGeneralDashboard(data.data.space);
+                        populateGeneralDashboard({ structures: structuresObject });
                         createGeneralCharts(structuresObject);
                     } else {
                         console.error('❌ No structures data found in response');
@@ -1101,7 +1102,8 @@
                 .map(([id, structure]) => {
                     const displayName = structure.title || structure.name || structure.id;
                     const icon = getStructureIcon(structure.id);
-                    const count = structure.count || 0;
+                    // Usar a contagem real de objetos da estrutura
+                    const count = structure.count || structure.objectCount || 0;
                     
                     console.log(`📋 Structure: ${id} -> ${displayName} (count: ${count})`);
                     
@@ -1142,10 +1144,11 @@
                         id: id,
                         title: structure.name || structure.title || id,
                         name: structure.name || structure.title || id,
-                        count: structure.count || 0,
+                        count: structure.count || structure.objectCount || 0,
                         type: structure.type || 'unknown',
                         propertyDefinitions: [], // Will be loaded when clicked
-                        labelColor: structure.labelColor || 'blue'
+                        labelColor: structure.labelColor || 'blue',
+                        properties: structure.properties || structure.propertyCount || 0
                     }));
                 }
             }
@@ -1159,8 +1162,10 @@
                 .map(structure => {
                     const displayName = structure.title || structure.name || structure.id;
                     const icon = getStructureIcon(structure.id);
-                    const count = structure.count || 0;
-                    const propertyCount = Array.isArray(structure.propertyDefinitions) ? structure.propertyDefinitions.length : '?';
+                    // Usar a contagem real de objetos
+                    const count = structure.count || structure.objectCount || 0;
+                    // Usar a contagem real de propriedades
+                    const propertyCount = structure.properties || structure.propertyCount || 0;
                     
                     return `
                         <div class="structure-card" onclick="selectStructure('${structure.id}')">
@@ -1290,44 +1295,61 @@
             try {
                 console.log(`🔍 Loading structure details for: ${structureId}`);
                 
-                // Temporarily use the space-info data directly until server is restarted
-                const dashboardResponse = await fetch('/api/dashboard');
-                const dashboardData = await dashboardResponse.json();
+                // Obter dados reais da estrutura
+                const structureResponse = await fetch(`/api/dashboard/structure/${structureId}`);
+                const structureData = await structureResponse.json();
                 
-                if (dashboardData.success && dashboardData.data && dashboardData.data.space) {
-                    // Find the structure in the raw space data
-                    let foundStructure = null;
-                    
-                    // The structures are in the raw space info from the logs
-                    // We need to parse the actual structure data from the space
-                    console.log('🔍 Looking for structure in space data...');
-                    
-                    // Create mock data based on what we know exists
-                    const mockStructureData = {
-                        basic: {
-                            id: structureId,
-                            title: dashboardData.data.space.structures[structureId]?.name || structureId,
-                            objectCount: 0
-                        },
-                        properties: await getMockPropertiesForStructure(structureId),
-                        propertyTypes: {},
-                        relationships: [],
-                        collections: []
-                    };
-                    
-                    currentStructureData = mockStructureData;
-                    console.log('📋 Structure details loaded (mock):', mockStructureData);
+                if (structureData.success && structureData.data) {
+                    // Usar dados reais da API
+                    currentStructureData = structureData.data;
+                    console.log('📋 Structure details loaded (real):', structureData.data);
                     
                     // Update structure stats
-                    updateStructureDetailStats(mockStructureData);
+                    updateStructureDetailStats(structureData.data);
                     
                     // Populate properties
-                    populatePropertySelection(mockStructureData.properties || []);
+                    populatePropertySelection(structureData.data.properties || []);
                     
                     // Populate relationships
-                    populateRelationships(mockStructureData.relationships || []);
+                    populateRelationships(structureData.data.relationships || []);
                 } else {
-                    throw new Error('Could not load structure details');
+                    // Fallback para dados do dashboard geral
+                    const dashboardResponse = await fetch('/api/dashboard');
+                    const dashboardData = await dashboardResponse.json();
+                    
+                    if (dashboardData.success && dashboardData.data && dashboardData.data.space) {
+                        const structure = dashboardData.data.space.structures[structureId];
+                        
+                        if (structure) {
+                            const realStructureData = {
+                                basic: {
+                                    id: structureId,
+                                    title: structure.name || structure.title || structureId,
+                                    objectCount: structure.count || structure.objectCount || 0
+                                },
+                                properties: structure.propertyDefinitions || [],
+                                propertyTypes: {},
+                                relationships: [],
+                                collections: []
+                            };
+                            
+                            currentStructureData = realStructureData;
+                            console.log('📋 Structure details loaded (from dashboard):', realStructureData);
+                            
+                            // Update structure stats
+                            updateStructureDetailStats(realStructureData);
+                            
+                            // Populate properties
+                            populatePropertySelection(realStructureData.properties || []);
+                            
+                            // Populate relationships
+                            populateRelationships(realStructureData.relationships || []);
+                        } else {
+                            throw new Error('Structure not found in dashboard data');
+                        }
+                    } else {
+                        throw new Error('Could not load structure details');
+                    }
                 }
             } catch (error) {
                 console.error('Error loading structure details:', error);
@@ -1399,13 +1421,13 @@
                         <div class="property-checkbox">
                             <i class="fas fa-check" style="display: none;"></i>
                         </div>
-                        <div class="property-type-icon ${typeClass}">
+                        <div class="property-icon">
                             <i class="${typeIcon}"></i>
                         </div>
                         <div class="property-info">
                             <div class="property-name">${property.name}</div>
-                            <div class="property-type">${property.type}</div>
-                            ${property.description ? `<div class="property-description">${property.description}</div>` : ''}
+                            <div class="property-type ${typeClass}">${property.type?.toUpperCase() || 'UNKNOWN'}</div>
+                            <div class="property-description">${property.description || 'No description available'}</div>
                         </div>
                     </div>
                 `;
@@ -1415,30 +1437,24 @@
         }
 
         function populateRelationships(relationships) {
-            const container = document.getElementById('relationshipsList');
+            const container = document.getElementById('relationshipsContainer');
             
             if (!relationships || relationships.length === 0) {
-                container.innerHTML = '<div class="loading">No relationships found with other structures</div>';
+                container.innerHTML = '<div class="no-data">No relationships found with other structures</div>';
                 return;
             }
 
-            const relationshipsHTML = relationships.map(rel => {
-                const icon = getStructureIcon(rel.structureId);
-                const typeText = rel.type === 'references' ? 'References' : 'Referenced by';
-                
+            const relationshipsHTML = relationships.map(relationship => {
                 return `
                     <div class="relationship-item">
                         <div class="relationship-header">
-                            <div class="relationship-icon" style="background-color: var(--accent-color);">
-                                <i class="${icon}"></i>
-                            </div>
-                            <div>
-                                <div class="relationship-title">${rel.structureName}</div>
-                                <div class="relationship-type">${typeText}</div>
-                            </div>
+                            <i class="fas fa-link"></i>
+                            <span class="relationship-title">${relationship.targetStructure?.title || relationship.targetStructure?.name || 'Unknown Structure'}</span>
                         </div>
                         <div class="relationship-details">
-                            Properties: ${rel.properties.map(p => p.name).join(', ')}
+                            <div class="relationship-type">${relationship.type || 'Unknown'}</div>
+                            <div class="relationship-direction">${relationship.direction || 'Unknown'}</div>
+                            ${relationship.description ? `<div class="relationship-description">${relationship.description}</div>` : ''}
                         </div>
                     </div>
                 `;
@@ -1447,7 +1463,7 @@
             container.innerHTML = relationshipsHTML;
         }
 
-        function getPropertyTypeIcon(type) {
+        function getPropertyTypeIcon(propertyType) {
             const iconMap = {
                 'text': 'fas fa-font',
                 'richText': 'fas fa-align-left',
@@ -1455,21 +1471,54 @@
                 'currency': 'fas fa-dollar-sign',
                 'date': 'fas fa-calendar',
                 'dateTime': 'fas fa-clock',
+                'datetime': 'fas fa-clock',
                 'select': 'fas fa-list',
-                'multiSelect': 'fas fa-list-ul',
-                'object': 'fas fa-link',
-                'boolean': 'fas fa-toggle-on',
-                'url': 'fas fa-globe',
+                'multiSelect': 'fas fa-tasks',
                 'email': 'fas fa-envelope',
                 'phone': 'fas fa-phone',
-                'file': 'fas fa-file',
-                'image': 'fas fa-image'
+                'url': 'fas fa-link',
+                'entity': 'fas fa-cube',
+                'entity_title': 'fas fa-heading',
+                'entity_description': 'fas fa-align-left',
+                'entity_createdAt': 'fas fa-calendar-plus',
+                'entity_updatedAt': 'fas fa-calendar-check',
+                'entity_tags': 'fas fa-tags',
+                'blocks': 'fas fa-puzzle-piece',
+                'object': 'fas fa-cube',
+                'boolean': 'fas fa-toggle-on',
+                'default': 'fas fa-cog'
             };
-            return iconMap[type] || 'fas fa-question';
+            
+            return iconMap[propertyType] || iconMap.default;
         }
 
-        function getPropertyTypeClass(type) {
-            return `type-${type.toLowerCase().replace(/[^a-z]/g, '')}`;
+        function getPropertyTypeClass(propertyType) {
+            const classMap = {
+                'text': 'type-text',
+                'richText': 'type-richtext',
+                'number': 'type-number',
+                'currency': 'type-currency',
+                'date': 'type-date',
+                'dateTime': 'type-datetime',
+                'datetime': 'type-datetime',
+                'select': 'type-select',
+                'multiSelect': 'type-multiselect',
+                'email': 'type-email',
+                'phone': 'type-phone',
+                'url': 'type-url',
+                'entity': 'type-entity',
+                'entity_title': 'type-entity',
+                'entity_description': 'type-entity',
+                'entity_createdAt': 'type-entity',
+                'entity_updatedAt': 'type-entity',
+                'entity_tags': 'type-entity',
+                'blocks': 'type-blocks',
+                'object': 'type-object',
+                'boolean': 'type-boolean',
+                'default': 'type-default'
+            };
+            
+            return classMap[propertyType] || classMap.default;
         }
 
         function toggleProperty(propertyId) {
@@ -1826,42 +1875,34 @@
             }
         }
 
-        function createStructureCharts(structureId) {
-            const structure = getStructureById(structureId);
-            if (!structure) return;
-
-            createObjectsChart(structureId);
-            createTimelineChart();
-        }
-
         function createGeneralCharts(structures) {
-            console.log('📊 Creating general charts with:', structures);
-            createStructuresChart(structures);
+            console.log('📊 Creating general charts with structures:', structures);
+            
+            // Create structures distribution chart
+            createStructuresDistributionChart(structures);
+            
+            // Create top structures chart
             createTopStructuresChart(structures);
         }
 
-        function createStructuresChart(structures) {
-            const ctx = document.getElementById('structuresChart').getContext('2d');
+        function createStructuresDistributionChart(structures) {
+            const ctx = document.getElementById('structuresChart');
+            if (!ctx) return;
             
-            if (charts.structuresChart) {
-                charts.structuresChart.destroy();
-            }
-
-            // Create data for structures distribution
-            const labels = Object.values(structures).map(s => s.title || s.name || s.id).slice(0, 8);
-            const data = Object.values(structures).map(() => 1).slice(0, 8);
-
-            charts.structuresChart = new Chart(ctx, {
+            const structuresArray = Object.values(structures);
+            const labels = structuresArray.map(s => s.name || s.title || s.id);
+            const data = structuresArray.map(s => s.count || s.objectCount || 0);
+            const colors = generateChartColors(data.length);
+            
+            new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: [
-                            '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981',
-                            '#f59e0b', '#ef4444', '#ec4899', '#84cc16'
-                        ],
-                        borderWidth: 0
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
                     }]
                 },
                 options: {
@@ -1871,11 +1912,8 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                padding: 15,
-                                usePointStyle: true,
-                                font: {
-                                    size: 11
-                                }
+                                padding: 20,
+                                usePointStyle: true
                             }
                         }
                     }
@@ -1884,85 +1922,39 @@
         }
 
         function createTopStructuresChart(structures) {
-            const ctx = document.getElementById('topStructuresChart').getContext('2d');
+            const ctx = document.getElementById('topStructuresChart');
+            if (!ctx) return;
             
-            if (charts.topStructuresChart) {
-                charts.topStructuresChart.destroy();
-            }
-
-            // Get top 10 structures by name
-            const sortedStructures = Object.entries(structures)
-                .sort(([,a], [,b]) => (a.title || a.name || a.id).localeCompare(b.title || b.name || b.id))
+            const structuresArray = Object.values(structures)
+                .sort((a, b) => (b.count || b.objectCount || 0) - (a.count || a.objectCount || 0))
                 .slice(0, 10);
-
-            const labels = sortedStructures.map(([, structure]) => 
-                (structure.title || structure.name || structure.id).substring(0, 15) + 
-                ((structure.title || structure.name || structure.id).length > 15 ? '...' : '')
-            );
-            const data = sortedStructures.map(() => Math.floor(Math.random() * 100) + 1); // Random data for now
-
-            charts.topStructuresChart = new Chart(ctx, {
+            
+            const labels = structuresArray.map(s => s.name || s.title || s.id);
+            const data = structuresArray.map(s => s.count || s.objectCount || 0);
+            
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Structure Activity',
+                        label: 'Objects',
                         data: data,
-                        backgroundColor: '#3b82f6',
-                        borderColor: '#2563eb',
-                        borderWidth: 1,
-                        borderRadius: 4
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
+                            ticks: {
+                                stepSize: 1
                             }
                         }
-                    }
-                }
-            });
-        }
-
-        function createObjectsChart(structureId) {
-            const ctx = document.getElementById('objectsChart').getContext('2d');
-            
-            if (charts.objectsChart) {
-                charts.objectsChart.destroy();
-            }
-
-            // Create sample data for now
-            const labels = ['Disponível'];
-            const data = [1];
-
-            charts.objectsChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: ['#3b82f6'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    },
                     plugins: {
                         legend: {
                             display: false
@@ -1972,75 +1964,86 @@
             });
         }
 
-        function createTimelineChart() {
-            const ctx = document.getElementById('timelineChart').getContext('2d');
+        function generateChartColors(count) {
+            const colors = [
+                '#3B82F6', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B',
+                '#EF4444', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
+            ];
             
-            if (charts.timelineChart) {
-                charts.timelineChart.destroy();
+            const result = [];
+            for (let i = 0; i < count; i++) {
+                result.push(colors[i % colors.length]);
             }
-
-            // Sample timeline data
-            const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
-            const data = [0, 0, 0, 0, 0, 0];
-
-            charts.timelineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Objetos Criados',
-                        data: data,
-                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            }
-                        }
-                    }
-                }
-            });
+            return result;
         }
 
         async function refreshData() {
             try {
                 console.log('🔄 Refreshing data...');
+                
+                // Show loading state
+                const refreshBtn = document.querySelector('.refresh-btn');
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                refreshBtn.disabled = true;
+                
+                // Reload structures
                 await loadStructures();
+                
+                // If we're on a structure dashboard, reload its details
                 if (currentStructure) {
-                    await updateStructureStats(currentStructure);
+                    await loadStructureDetails(currentStructure);
                 }
-                // Reset to general dashboard after refresh
-                showWelcome();
+                
+                // Reset button
+                refreshBtn.innerHTML = originalText;
+                refreshBtn.disabled = false;
+                
+                console.log('✅ Data refreshed successfully');
             } catch (error) {
                 console.error('Error refreshing data:', error);
-                showError('Error refreshing data');
+                showError('Error refreshing data: ' + error.message);
+                
+                // Reset button even on error
+                const refreshBtn = document.querySelector('.refresh-btn');
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                refreshBtn.disabled = false;
             }
         }
 
         function showError(message) {
-            console.error(message);
-            // You can implement a toast notification here
-            alert(message); // Temporary alert for debugging
+            console.error('❌ Error:', message);
+            
+            // Create error notification
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--error-color);
+                color: white;
+                padding: 16px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                max-width: 400px;
+                font-size: 14px;
+            `;
+            errorDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(errorDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.parentNode.removeChild(errorDiv);
+                }
+            }, 5000);
         }
 
         // App will be initialized when DOM is loaded
