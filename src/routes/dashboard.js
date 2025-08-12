@@ -70,39 +70,106 @@ router.get('/space-stats', async (req, res) => {
   }
 });
 
-// Análise de uma estrutura específica
+// Análise de uma estrutura específica com propriedades mapeadas
 router.get('/structure/:structureId', async (req, res) => {
   try {
     const { structureId } = req.params;
     
     const analysis = {
       basic: null,
-      numericProperties: {},
-      references: {},
-      temporal: {}
+      properties: [],
+      propertyTypes: {},
+      relationships: [],
+      collections: []
     };
 
     try {
-      // Obter informações básicas da estrutura
+      // Obter informações da estrutura completa do espaço
       const spaceInfo = await capacitiesAPI.getSpaceInfo();
       const structure = spaceInfo.structures?.find(s => s.id === structureId);
       
       if (structure) {
-        const objects = await capacitiesAPI.getObjectsByStructure(structureId, 1000);
         analysis.basic = {
           ...structure,
-          objectCount: objects.objects?.length || 0
+          objectCount: 0 // Não disponível ainda na API
         };
-      }
 
-      // Análise de propriedades numéricas
-      analysis.numericProperties = await analyticsService.analyzeNumericProperties(structureId);
-      
-      // Análise de referências
-      analysis.references = await analyticsService.analyzeObjectReferences(structureId);
-      
-      // Análise temporal
-      analysis.temporal = await analyticsService.analyzeTemporalActivity(structureId);
+        // Mapear propriedades da estrutura
+        if (structure.propertyDefinitions && Array.isArray(structure.propertyDefinitions)) {
+          analysis.properties = structure.propertyDefinitions.map(prop => ({
+            id: prop.id,
+            name: prop.name,
+            type: prop.type,
+            required: prop.required || false,
+            description: prop.description || '',
+            options: prop.options || [],
+            defaultValue: prop.defaultValue
+          }));
+
+          // Agrupar propriedades por tipo para estatísticas
+          analysis.propertyTypes = structure.propertyDefinitions.reduce((types, prop) => {
+            const type = prop.type || 'unknown';
+            if (!types[type]) {
+              types[type] = [];
+            }
+            types[type].push({
+              id: prop.id,
+              name: prop.name,
+              required: prop.required || false
+            });
+            return types;
+          }, {});
+        }
+
+        // Mapear coleções da estrutura
+        if (structure.collections && Array.isArray(structure.collections)) {
+          analysis.collections = structure.collections.map(collection => ({
+            id: collection.id,
+            name: collection.name,
+            description: collection.description || ''
+          }));
+        }
+
+        // Encontrar relacionamentos com outras estruturas
+        const allStructures = spaceInfo.structures || [];
+        analysis.relationships = allStructures
+          .filter(otherStruct => otherStruct.id !== structureId)
+          .map(otherStruct => {
+            const hasRelationship = otherStruct.propertyDefinitions?.some(prop => 
+              prop.type === 'object' && prop.structureId === structureId
+            );
+            
+            if (hasRelationship) {
+              return {
+                structureId: otherStruct.id,
+                structureName: otherStruct.title,
+                type: 'referenced_by',
+                properties: otherStruct.propertyDefinitions
+                  ?.filter(prop => prop.type === 'object' && prop.structureId === structureId)
+                  ?.map(prop => ({ id: prop.id, name: prop.name })) || []
+              };
+            }
+
+            // Verificar se esta estrutura referencia outras
+            const referencesOther = structure.propertyDefinitions?.some(prop => 
+              prop.type === 'object' && prop.structureId === otherStruct.id
+            );
+
+            if (referencesOther) {
+              return {
+                structureId: otherStruct.id,
+                structureName: otherStruct.title,
+                type: 'references',
+                properties: structure.propertyDefinitions
+                  ?.filter(prop => prop.type === 'object' && prop.structureId === otherStruct.id)
+                  ?.map(prop => ({ id: prop.id, name: prop.name })) || []
+              };
+            }
+
+            return null;
+          })
+          .filter(rel => rel !== null);
+      }
       
     } catch (error) {
       console.warn(`Erro ao analisar estrutura ${structureId}:`, error.message);
@@ -226,6 +293,224 @@ router.get('/compare', async (req, res) => {
     });
   }
 });
+
+// Gerar estatísticas de propriedades selecionadas
+router.post('/structure/:structureId/generate-statistics', async (req, res) => {
+  try {
+    const { structureId } = req.params;
+    const { selectedProperties } = req.body;
+
+    if (!selectedProperties || !Array.isArray(selectedProperties)) {
+      return res.status(400).json({
+        success: false,
+        error: 'selectedProperties deve ser um array de IDs de propriedades'
+      });
+    }
+
+    // Obter informações da estrutura
+    const spaceInfo = await capacitiesAPI.getSpaceInfo();
+    const structure = spaceInfo.structures?.find(s => s.id === structureId);
+
+    if (!structure) {
+      return res.status(404).json({
+        success: false,
+        error: 'Estrutura não encontrada'
+      });
+    }
+
+    // Gerar estatísticas baseadas nas propriedades selecionadas
+    const statistics = {
+      structureInfo: {
+        id: structure.id,
+        title: structure.title,
+        pluralName: structure.pluralName,
+        labelColor: structure.labelColor
+      },
+      selectedProperties: [],
+      propertyStatistics: {},
+      relationships: [],
+      mockData: true // Indicador de que são dados simulados
+    };
+
+    // Processar cada propriedade selecionada
+    for (const propertyId of selectedProperties) {
+      const property = structure.propertyDefinitions?.find(p => p.id === propertyId);
+      
+      if (property) {
+        statistics.selectedProperties.push({
+          id: property.id,
+          name: property.name,
+          type: property.type,
+          description: property.description || ''
+        });
+
+        // Gerar estatísticas simuladas baseadas no tipo da propriedade
+        switch (property.type) {
+          case 'text':
+          case 'richText':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'text',
+              totalEntries: Math.floor(Math.random() * 100) + 10,
+              averageLength: Math.floor(Math.random() * 200) + 50,
+              emptyEntries: Math.floor(Math.random() * 20),
+              wordCloud: generateMockWordCloud()
+            };
+            break;
+
+          case 'number':
+          case 'currency':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'numeric',
+              totalEntries: Math.floor(Math.random() * 100) + 10,
+              min: Math.floor(Math.random() * 100),
+              max: Math.floor(Math.random() * 900) + 100,
+              average: Math.floor(Math.random() * 500) + 100,
+              median: Math.floor(Math.random() * 400) + 150,
+              distribution: generateMockDistribution()
+            };
+            break;
+
+          case 'date':
+          case 'dateTime':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'temporal',
+              totalEntries: Math.floor(Math.random() * 100) + 10,
+              earliestDate: '2023-01-01',
+              latestDate: '2024-12-31',
+              timelineData: generateMockTimeline(),
+              yearDistribution: generateMockYearDistribution()
+            };
+            break;
+
+          case 'select':
+          case 'multiSelect':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'categorical',
+              totalEntries: Math.floor(Math.random() * 100) + 10,
+              uniqueValues: Math.floor(Math.random() * 10) + 3,
+              distribution: generateMockCategoricalDistribution(property.options || []),
+              topValues: generateMockTopValues()
+            };
+            break;
+
+          case 'object':
+            statistics.propertyStatistics[propertyId] = {
+              type: 'relationship',
+              totalReferences: Math.floor(Math.random() * 50) + 5,
+              uniqueTargets: Math.floor(Math.random() * 30) + 3,
+              referencedStructures: [property.structureId || 'unknown'],
+              networkData: generateMockNetworkData()
+            };
+            break;
+
+          default:
+            statistics.propertyStatistics[propertyId] = {
+              type: 'unknown',
+              totalEntries: Math.floor(Math.random() * 50) + 5,
+              message: 'Tipo de propriedade não suportado para estatísticas'
+            };
+        }
+      }
+    }
+
+    // Gerar estatísticas de relacionamentos
+    const allStructures = spaceInfo.structures || [];
+    statistics.relationships = allStructures
+      .filter(otherStruct => otherStruct.id !== structureId)
+      .map(otherStruct => {
+        const relationshipProperties = structure.propertyDefinitions?.filter(prop => 
+          prop.type === 'object' && prop.structureId === otherStruct.id &&
+          selectedProperties.includes(prop.id)
+        ) || [];
+
+        if (relationshipProperties.length > 0) {
+          return {
+            targetStructure: {
+              id: otherStruct.id,
+              title: otherStruct.title,
+              labelColor: otherStruct.labelColor
+            },
+            properties: relationshipProperties.map(prop => prop.name),
+            connectionStrength: Math.floor(Math.random() * 100),
+            totalConnections: Math.floor(Math.random() * 50) + 5
+          };
+        }
+        return null;
+      })
+      .filter(rel => rel !== null);
+
+    res.json({
+      success: true,
+      data: statistics,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Erro ao gerar estatísticas:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Funções auxiliares para gerar dados simulados
+function generateMockWordCloud() {
+  const words = ['capacities', 'dashboard', 'analytics', 'data', 'structure', 'property', 'analysis', 'statistics', 'visualization'];
+  return words.map(word => ({
+    word,
+    frequency: Math.floor(Math.random() * 50) + 5
+  }));
+}
+
+function generateMockDistribution() {
+  return Array.from({ length: 10 }, (_, i) => ({
+    range: `${i * 10}-${(i + 1) * 10}`,
+    count: Math.floor(Math.random() * 20) + 1
+  }));
+}
+
+function generateMockTimeline() {
+  return Array.from({ length: 12 }, (_, i) => ({
+    month: `2024-${String(i + 1).padStart(2, '0')}`,
+    count: Math.floor(Math.random() * 30) + 1
+  }));
+}
+
+function generateMockYearDistribution() {
+  return [
+    { year: '2022', count: Math.floor(Math.random() * 20) + 5 },
+    { year: '2023', count: Math.floor(Math.random() * 40) + 10 },
+    { year: '2024', count: Math.floor(Math.random() * 60) + 15 }
+  ];
+}
+
+function generateMockCategoricalDistribution(options) {
+  if (options.length === 0) {
+    options = ['Opção A', 'Opção B', 'Opção C', 'Opção D'];
+  }
+  return options.slice(0, 5).map(option => ({
+    value: option,
+    count: Math.floor(Math.random() * 30) + 1
+  }));
+}
+
+function generateMockTopValues() {
+  return [
+    { value: 'Valor mais comum', count: Math.floor(Math.random() * 50) + 20 },
+    { value: 'Segundo mais comum', count: Math.floor(Math.random() * 40) + 15 },
+    { value: 'Terceiro mais comum', count: Math.floor(Math.random() * 30) + 10 }
+  ];
+}
+
+function generateMockNetworkData() {
+  return {
+    nodes: Math.floor(Math.random() * 20) + 5,
+    edges: Math.floor(Math.random() * 40) + 10,
+    clusters: Math.floor(Math.random() * 5) + 2
+  };
+}
 
 // Estatísticas de coleções
 router.get('/collections', async (req, res) => {

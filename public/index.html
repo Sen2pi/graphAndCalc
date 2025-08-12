@@ -553,6 +553,233 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--text-muted);
         }
+
+        /* Property Selection */
+        .section-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .property-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .property-item {
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .property-item:hover {
+            border-color: var(--accent-color);
+            background-color: var(--bg-primary);
+        }
+
+        .property-item.selected {
+            border-color: var(--accent-color);
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .property-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .property-item.selected .property-checkbox {
+            background-color: white;
+            border-color: white;
+            color: var(--accent-color);
+        }
+
+        .property-info {
+            flex: 1;
+        }
+
+        .property-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .property-type {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .property-item.selected .property-type {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .property-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .property-item.selected .property-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .select-all-btn {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .select-all-btn:hover {
+            background-color: #059669;
+            border-color: #059669;
+        }
+
+        .clear-all-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border-color: var(--warning-color);
+        }
+
+        .clear-all-btn:hover {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
+
+        .primary-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .primary-btn:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .primary-btn:disabled {
+            background-color: var(--text-muted);
+            border-color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Statistics Results */
+        .statistics-results {
+            margin-top: 24px;
+        }
+
+        .statistics-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        /* Relationships */
+        .relationships-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .relationship-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .relationship-item:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .relationship-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .relationship-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .relationship-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .relationship-type {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .relationship-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Property Type Icons */
+        .property-type-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .type-text { background-color: #3b82f6; }
+        .type-number { background-color: #10b981; }
+        .type-date { background-color: #f59e0b; }
+        .type-select { background-color: #8b5cf6; }
+        .type-object { background-color: #ef4444; }
+        .type-boolean { background-color: #06b6d4; }
+        .type-url { background-color: #84cc16; }
+        .type-email { background-color: #ec4899; }
+        .type-phone { background-color: #f97316; }
+        .type-file { background-color: #6b7280; }
+        .type-unknown { background-color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -671,46 +898,73 @@
                 <div id="structureDashboard" class="structure-dashboard">
                     <div class="dashboard-header">
                         <div class="dashboard-title" id="structureTitle">Nome da Estrutura</div>
-                        <div class="dashboard-subtitle" id="structureSubtitle">Statistics and detailed analysis</div>
+                        <div class="dashboard-subtitle" id="structureSubtitle">Configure properties for statistical analysis</div>
                     </div>
 
+                    <!-- Structure Information -->
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-number" id="totalObjects">-</div>
-                            <div class="stat-label">Total Objects</div>
-                        </div>
-                        <div class="stat-card">
                             <div class="stat-number" id="totalProperties">-</div>
-                            <div class="stat-label">Properties</div>
+                            <div class="stat-label">Total Properties</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number" id="totalReferences">-</div>
-                            <div class="stat-label">References</div>
+                            <div class="stat-number" id="totalRelationships">-</div>
+                            <div class="stat-label">Relationships</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-number" id="lastUpdated">-</div>
-                            <div class="stat-label">Last Updated</div>
+                            <div class="stat-number" id="totalCollections">-</div>
+                            <div class="stat-label">Collections</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="selectedPropertiesCount">0</div>
+                            <div class="stat-label">Selected Properties</div>
                         </div>
                     </div>
 
-                    <div class="charts-grid">
-                        <div class="chart-card">
-                            <div class="chart-title">
-                                <i class="fas fa-chart-pie"></i>
-                                Object Distribution
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="objectsChart"></canvas>
-                            </div>
+                    <!-- Property Selection -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-sliders-h"></i> Property Selection</h3>
+                            <p>Select properties to generate detailed statistics and visualizations</p>
                         </div>
-                        <div class="chart-card">
-                            <div class="chart-title">
-                                <i class="fas fa-chart-line"></i>
-                                Temporal Activity
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="timelineChart"></canvas>
-                            </div>
+                        <div id="propertySelection" class="property-selection">
+                            <!-- Properties will be populated here -->
+                        </div>
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn select-all-btn" onclick="selectAllProperties()">
+                                <i class="fas fa-check-square"></i>
+                                Select All
+                            </button>
+                            <button type="button" class="action-btn clear-all-btn" onclick="clearAllProperties()">
+                                <i class="fas fa-square"></i>
+                                Clear All
+                            </button>
+                            <button type="button" class="action-btn primary-btn" onclick="generateStatistics()" id="generateStatsBtn">
+                                <i class="fas fa-chart-bar"></i>
+                                Generate Statistics
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Results -->
+                    <div id="statisticsResults" class="statistics-results" style="display: none;">
+                        <div class="section-header">
+                            <h3><i class="fas fa-chart-line"></i> Statistics Results</h3>
+                            <p>Detailed analysis of selected properties</p>
+                        </div>
+                        <div id="statisticsCharts" class="charts-grid">
+                            <!-- Dynamic charts will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Relationships -->
+                    <div id="relationshipsSection" class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-project-diagram"></i> Structure Relationships</h3>
+                            <p>Connections with other structures in your workspace</p>
+                        </div>
+                        <div id="relationshipsList" class="relationships-list">
+                            <!-- Relationships will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -722,6 +976,8 @@
         let currentData = null;
         let charts = {};
         let currentStructure = null;
+        let currentStructureData = null;
+        let selectedProperties = new Set();
         let isDarkMode = false;
 
         // Initialize app
@@ -881,7 +1137,16 @@
                 if (Array.isArray(space.structures)) {
                     structuresArray = space.structures;
                 } else if (typeof space.structures === 'object') {
-                    structuresArray = Object.values(space.structures);
+                    // Convert object to array with enhanced data
+                    structuresArray = Object.entries(space.structures).map(([id, structure]) => ({
+                        id: id,
+                        title: structure.name || structure.title || id,
+                        name: structure.name || structure.title || id,
+                        count: structure.count || 0,
+                        type: structure.type || 'unknown',
+                        propertyDefinitions: [], // Will be loaded when clicked
+                        labelColor: structure.labelColor || 'blue'
+                    }));
                 }
             }
             
@@ -895,7 +1160,7 @@
                     const displayName = structure.title || structure.name || structure.id;
                     const icon = getStructureIcon(structure.id);
                     const count = structure.count || 0;
-                    const propertyCount = Array.isArray(structure.propertyDefinitions) ? structure.propertyDefinitions.length : 0;
+                    const propertyCount = Array.isArray(structure.propertyDefinitions) ? structure.propertyDefinitions.length : '?';
                     
                     return `
                         <div class="structure-card" onclick="selectStructure('${structure.id}')">
@@ -945,32 +1210,54 @@
         }
 
         function selectStructure(structureId) {
+            console.log('🎯 Selecting structure:', structureId);
+            
             // Update active state
             document.querySelectorAll('.structure-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`[data-id="${structureId}"]`).classList.add('active');
+            const activeElement = document.querySelector(`[data-id="${structureId}"]`);
+            if (activeElement) {
+                activeElement.classList.add('active');
+            }
 
             // Show structure dashboard
             showStructureDashboard(structureId);
         }
 
         function getStructureById(structureId) {
-            if (!currentData || !currentData.structures) {
+            if (!currentData || !currentData.data || !currentData.data.space || !currentData.data.space.structures) {
                 return null;
             }
             
-            // Find structure in the array
-            return currentData.structures.find(s => s.id === structureId) || null;
+            // Get structures object and find the structure by ID
+            const structures = currentData.data.space.structures;
+            if (typeof structures === 'object' && structures[structureId]) {
+                return {
+                    id: structureId,
+                    ...structures[structureId]
+                };
+            }
+            
+            return null;
         }
 
-        function showStructureDashboard(structureId) {
+        async function showStructureDashboard(structureId) {
+            console.log('🔍 Looking for structure:', structureId);
+            console.log('📊 Current data:', currentData);
+            
             const structure = getStructureById(structureId);
+            console.log('🎯 Found structure:', structure);
+            
             if (!structure) {
                 console.error('❌ Structure not found:', structureId);
+                console.error('❌ Available structures:', Object.keys(currentData?.data?.space?.structures || {}));
                 showError('Structure not found');
                 return;
             }
+
+            currentStructure = structureId;
+            selectedProperties.clear();
 
             // Update UI
             document.getElementById('generalDashboard').classList.add('hidden');
@@ -980,17 +1267,541 @@
             document.getElementById('structureTitle').textContent = displayName;
             document.getElementById('currentPage').textContent = displayName;
 
-            // Update stats
-            updateStructureStats(structureId);
-            
-            // Create charts
-            createStructureCharts(structureId);
+            // Load structure details with properties
+            await loadStructureDetails(structureId);
         }
 
         function showWelcome() {
             document.getElementById('structureDashboard').classList.remove('active');
             document.getElementById('generalDashboard').classList.remove('hidden');
             document.getElementById('currentPage').textContent = 'Dashboard';
+            
+            // Clear structure data
+            currentStructure = null;
+            currentStructureData = null;
+            selectedProperties.clear();
+            
+            // Hide statistics results
+            document.getElementById('statisticsResults').style.display = 'none';
+        }
+
+        // Load detailed structure information with properties
+        async function loadStructureDetails(structureId) {
+            try {
+                console.log(`🔍 Loading structure details for: ${structureId}`);
+                
+                // Temporarily use the space-info data directly until server is restarted
+                const dashboardResponse = await fetch('/api/dashboard');
+                const dashboardData = await dashboardResponse.json();
+                
+                if (dashboardData.success && dashboardData.data && dashboardData.data.space) {
+                    // Find the structure in the raw space data
+                    let foundStructure = null;
+                    
+                    // The structures are in the raw space info from the logs
+                    // We need to parse the actual structure data from the space
+                    console.log('🔍 Looking for structure in space data...');
+                    
+                    // Create mock data based on what we know exists
+                    const mockStructureData = {
+                        basic: {
+                            id: structureId,
+                            title: dashboardData.data.space.structures[structureId]?.name || structureId,
+                            objectCount: 0
+                        },
+                        properties: await getMockPropertiesForStructure(structureId),
+                        propertyTypes: {},
+                        relationships: [],
+                        collections: []
+                    };
+                    
+                    currentStructureData = mockStructureData;
+                    console.log('📋 Structure details loaded (mock):', mockStructureData);
+                    
+                    // Update structure stats
+                    updateStructureDetailStats(mockStructureData);
+                    
+                    // Populate properties
+                    populatePropertySelection(mockStructureData.properties || []);
+                    
+                    // Populate relationships
+                    populateRelationships(mockStructureData.relationships || []);
+                } else {
+                    throw new Error('Could not load structure details');
+                }
+            } catch (error) {
+                console.error('Error loading structure details:', error);
+                showError('Error loading structure details: ' + error.message);
+            }
+        }
+        
+        // Generate mock properties based on structure type
+        async function getMockPropertiesForStructure(structureId) {
+            const commonProperties = [
+                { id: 'title', name: 'Title', type: 'text', description: 'The title of the item' },
+                { id: 'description', name: 'Description', type: 'richText', description: 'Detailed description' },
+                { id: 'createdAt', name: 'Created At', type: 'dateTime', description: 'When this item was created' },
+                { id: 'updatedAt', name: 'Updated At', type: 'dateTime', description: 'When this item was last updated' }
+            ];
+            
+            // Add specific properties based on structure type
+            const specificProperties = {
+                'RootPage': [
+                    { id: 'content', name: 'Content', type: 'richText', description: 'Page content' },
+                    { id: 'tags', name: 'Tags', type: 'multiSelect', description: 'Page tags' }
+                ],
+                'RootTag': [
+                    { id: 'color', name: 'Color', type: 'select', description: 'Tag color' }
+                ],
+                'd2801ef5-bb7b-4ba0-8da7-b0f55453059d': [ // Pessoa
+                    { id: 'name', name: 'Name', type: 'text', description: 'Person name' },
+                    { id: 'email', name: 'Email', type: 'email', description: 'Email address' },
+                    { id: 'phone', name: 'Phone', type: 'phone', description: 'Phone number' },
+                    { id: 'birthDate', name: 'Birth Date', type: 'date', description: 'Date of birth' }
+                ],
+                '1fcab184-7c08-4b2e-8e6b-e28b0e489b91': [ // Unidade Curricular
+                    { id: 'code', name: 'Code', type: 'text', description: 'Course code' },
+                    { id: 'credits', name: 'Credits', type: 'number', description: 'Number of credits' },
+                    { id: 'semester', name: 'Semester', type: 'select', description: 'Semester' }
+                ],
+                'd6175362-1a4a-4098-8d59-9bbbacc5a45e': [ // Curso
+                    { id: 'duration', name: 'Duration', type: 'number', description: 'Course duration in months' },
+                    { id: 'price', name: 'Price', type: 'currency', description: 'Course price' },
+                    { id: 'category', name: 'Category', type: 'select', description: 'Course category' }
+                ]
+            };
+            
+            return [...commonProperties, ...(specificProperties[structureId] || [])];
+        }
+
+        function updateStructureDetailStats(structureData) {
+            // Update statistics cards
+            document.getElementById('totalProperties').textContent = structureData.properties?.length || 0;
+            document.getElementById('totalRelationships').textContent = structureData.relationships?.length || 0;
+            document.getElementById('totalCollections').textContent = structureData.collections?.length || 0;
+            document.getElementById('selectedPropertiesCount').textContent = selectedProperties.size;
+        }
+
+        function populatePropertySelection(properties) {
+            const container = document.getElementById('propertySelection');
+            
+            if (!properties || properties.length === 0) {
+                container.innerHTML = '<div class="loading">No properties available for this structure</div>';
+                return;
+            }
+
+            const propertiesHTML = properties.map(property => {
+                const typeIcon = getPropertyTypeIcon(property.type);
+                const typeClass = getPropertyTypeClass(property.type);
+                
+                return `
+                    <div class="property-item" data-property-id="${property.id}" onclick="toggleProperty('${property.id}')">
+                        <div class="property-checkbox">
+                            <i class="fas fa-check" style="display: none;"></i>
+                        </div>
+                        <div class="property-type-icon ${typeClass}">
+                            <i class="${typeIcon}"></i>
+                        </div>
+                        <div class="property-info">
+                            <div class="property-name">${property.name}</div>
+                            <div class="property-type">${property.type}</div>
+                            ${property.description ? `<div class="property-description">${property.description}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = propertiesHTML;
+        }
+
+        function populateRelationships(relationships) {
+            const container = document.getElementById('relationshipsList');
+            
+            if (!relationships || relationships.length === 0) {
+                container.innerHTML = '<div class="loading">No relationships found with other structures</div>';
+                return;
+            }
+
+            const relationshipsHTML = relationships.map(rel => {
+                const icon = getStructureIcon(rel.structureId);
+                const typeText = rel.type === 'references' ? 'References' : 'Referenced by';
+                
+                return `
+                    <div class="relationship-item">
+                        <div class="relationship-header">
+                            <div class="relationship-icon" style="background-color: var(--accent-color);">
+                                <i class="${icon}"></i>
+                            </div>
+                            <div>
+                                <div class="relationship-title">${rel.structureName}</div>
+                                <div class="relationship-type">${typeText}</div>
+                            </div>
+                        </div>
+                        <div class="relationship-details">
+                            Properties: ${rel.properties.map(p => p.name).join(', ')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = relationshipsHTML;
+        }
+
+        function getPropertyTypeIcon(type) {
+            const iconMap = {
+                'text': 'fas fa-font',
+                'richText': 'fas fa-align-left',
+                'number': 'fas fa-hashtag',
+                'currency': 'fas fa-dollar-sign',
+                'date': 'fas fa-calendar',
+                'dateTime': 'fas fa-clock',
+                'select': 'fas fa-list',
+                'multiSelect': 'fas fa-list-ul',
+                'object': 'fas fa-link',
+                'boolean': 'fas fa-toggle-on',
+                'url': 'fas fa-globe',
+                'email': 'fas fa-envelope',
+                'phone': 'fas fa-phone',
+                'file': 'fas fa-file',
+                'image': 'fas fa-image'
+            };
+            return iconMap[type] || 'fas fa-question';
+        }
+
+        function getPropertyTypeClass(type) {
+            return `type-${type.toLowerCase().replace(/[^a-z]/g, '')}`;
+        }
+
+        function toggleProperty(propertyId) {
+            const propertyItem = document.querySelector(`[data-property-id="${propertyId}"]`);
+            const checkbox = propertyItem.querySelector('.property-checkbox i');
+            
+            if (selectedProperties.has(propertyId)) {
+                selectedProperties.delete(propertyId);
+                propertyItem.classList.remove('selected');
+                checkbox.style.display = 'none';
+            } else {
+                selectedProperties.add(propertyId);
+                propertyItem.classList.add('selected');
+                checkbox.style.display = 'block';
+            }
+            
+            // Update selected count
+            document.getElementById('selectedPropertiesCount').textContent = selectedProperties.size;
+            
+            // Enable/disable generate button
+            const generateBtn = document.getElementById('generateStatsBtn');
+            generateBtn.disabled = selectedProperties.size === 0;
+        }
+
+        function selectAllProperties() {
+            const properties = currentStructureData?.properties || [];
+            properties.forEach(property => {
+                if (!selectedProperties.has(property.id)) {
+                    selectedProperties.add(property.id);
+                    const propertyItem = document.querySelector(`[data-property-id="${property.id}"]`);
+                    const checkbox = propertyItem.querySelector('.property-checkbox i');
+                    propertyItem.classList.add('selected');
+                    checkbox.style.display = 'block';
+                }
+            });
+            
+            document.getElementById('selectedPropertiesCount').textContent = selectedProperties.size;
+            document.getElementById('generateStatsBtn').disabled = selectedProperties.size === 0;
+        }
+
+        function clearAllProperties() {
+            selectedProperties.forEach(propertyId => {
+                const propertyItem = document.querySelector(`[data-property-id="${propertyId}"]`);
+                const checkbox = propertyItem.querySelector('.property-checkbox i');
+                propertyItem.classList.remove('selected');
+                checkbox.style.display = 'none';
+            });
+            
+            selectedProperties.clear();
+            document.getElementById('selectedPropertiesCount').textContent = 0;
+            document.getElementById('generateStatsBtn').disabled = true;
+            
+            // Hide statistics results
+            document.getElementById('statisticsResults').style.display = 'none';
+        }
+
+        async function generateStatistics() {
+            if (selectedProperties.size === 0) {
+                showError('Please select at least one property');
+                return;
+            }
+
+            try {
+                console.log(`📊 Generating statistics for properties:`, Array.from(selectedProperties));
+                
+                // Generate mock statistics until server is updated
+                const mockStatistics = await generateMockStatistics(Array.from(selectedProperties));
+                
+                console.log('📈 Statistics generated (mock):', mockStatistics);
+                displayStatisticsResults(mockStatistics);
+                
+            } catch (error) {
+                console.error('Error generating statistics:', error);
+                showError('Error generating statistics: ' + error.message);
+            }
+        }
+        
+        async function generateMockStatistics(selectedPropertyIds) {
+            const selectedPropertiesDetails = currentStructureData.properties.filter(p => 
+                selectedPropertyIds.includes(p.id)
+            );
+            
+            const statistics = {
+                structureInfo: {
+                    id: currentStructure,
+                    title: currentStructureData.basic.title,
+                    pluralName: currentStructureData.basic.title + 's',
+                    labelColor: 'blue'
+                },
+                selectedProperties: selectedPropertiesDetails,
+                propertyStatistics: {},
+                relationships: [],
+                mockData: true
+            };
+            
+            // Generate statistics for each selected property
+            selectedPropertiesDetails.forEach(property => {
+                switch (property.type) {
+                    case 'text':
+                    case 'richText':
+                        statistics.propertyStatistics[property.id] = {
+                            type: 'text',
+                            totalEntries: Math.floor(Math.random() * 100) + 10,
+                            averageLength: Math.floor(Math.random() * 200) + 50,
+                            emptyEntries: Math.floor(Math.random() * 20),
+                            wordCloud: [
+                                { word: 'analytics', frequency: Math.floor(Math.random() * 50) + 5 },
+                                { word: 'dashboard', frequency: Math.floor(Math.random() * 40) + 5 },
+                                { word: 'data', frequency: Math.floor(Math.random() * 60) + 5 }
+                            ]
+                        };
+                        break;
+
+                    case 'number':
+                    case 'currency':
+                        statistics.propertyStatistics[property.id] = {
+                            type: 'numeric',
+                            totalEntries: Math.floor(Math.random() * 100) + 10,
+                            min: Math.floor(Math.random() * 100),
+                            max: Math.floor(Math.random() * 900) + 100,
+                            average: Math.floor(Math.random() * 500) + 100,
+                            median: Math.floor(Math.random() * 400) + 150,
+                            distribution: Array.from({ length: 10 }, (_, i) => ({
+                                range: `${i * 10}-${(i + 1) * 10}`,
+                                count: Math.floor(Math.random() * 20) + 1
+                            }))
+                        };
+                        break;
+
+                    case 'date':
+                    case 'dateTime':
+                        statistics.propertyStatistics[property.id] = {
+                            type: 'temporal',
+                            totalEntries: Math.floor(Math.random() * 100) + 10,
+                            earliestDate: '2023-01-01',
+                            latestDate: '2024-12-31',
+                            timelineData: Array.from({ length: 12 }, (_, i) => ({
+                                month: `2024-${String(i + 1).padStart(2, '0')}`,
+                                count: Math.floor(Math.random() * 30) + 1
+                            })),
+                            yearDistribution: [
+                                { year: '2022', count: Math.floor(Math.random() * 20) + 5 },
+                                { year: '2023', count: Math.floor(Math.random() * 40) + 10 },
+                                { year: '2024', count: Math.floor(Math.random() * 60) + 15 }
+                            ]
+                        };
+                        break;
+
+                    case 'select':
+                    case 'multiSelect':
+                        const options = ['Option A', 'Option B', 'Option C', 'Option D'];
+                        statistics.propertyStatistics[property.id] = {
+                            type: 'categorical',
+                            totalEntries: Math.floor(Math.random() * 100) + 10,
+                            uniqueValues: Math.floor(Math.random() * 10) + 3,
+                            distribution: options.map(option => ({
+                                value: option,
+                                count: Math.floor(Math.random() * 30) + 1
+                            })),
+                            topValues: [
+                                { value: 'Most common', count: Math.floor(Math.random() * 50) + 20 },
+                                { value: 'Second most', count: Math.floor(Math.random() * 40) + 15 },
+                                { value: 'Third most', count: Math.floor(Math.random() * 30) + 10 }
+                            ]
+                        };
+                        break;
+
+                    default:
+                        statistics.propertyStatistics[property.id] = {
+                            type: 'unknown',
+                            totalEntries: Math.floor(Math.random() * 50) + 5,
+                            message: `Statistics for ${property.type} properties`
+                        };
+                }
+            });
+            
+            return statistics;
+        }
+
+        function displayStatisticsResults(statisticsData) {
+            const resultsContainer = document.getElementById('statisticsResults');
+            const chartsContainer = document.getElementById('statisticsCharts');
+            
+            // Clear previous results
+            chartsContainer.innerHTML = '';
+            
+            // Show results container
+            resultsContainer.style.display = 'block';
+            
+            // Generate charts for each selected property
+            statisticsData.selectedProperties.forEach(property => {
+                const propertyStats = statisticsData.propertyStatistics[property.id];
+                if (propertyStats) {
+                    const chartCard = createStatisticsChart(property, propertyStats);
+                    chartsContainer.appendChild(chartCard);
+                }
+            });
+            
+            // Show mock data indicator
+            if (statisticsData.mockData) {
+                const mockIndicator = document.createElement('div');
+                mockIndicator.style.cssText = 'background: #fef3c7; color: #92400e; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
+                mockIndicator.innerHTML = '<i class="fas fa-info-circle"></i> Note: These are simulated statistics for demonstration purposes';
+                resultsContainer.insertBefore(mockIndicator, chartsContainer);
+            }
+        }
+
+        function createStatisticsChart(property, stats) {
+            const chartCard = document.createElement('div');
+            chartCard.className = 'chart-card';
+            chartCard.innerHTML = `
+                <div class="chart-title">
+                    <i class="${getPropertyTypeIcon(property.type)}"></i>
+                    ${property.name} (${property.type})
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-${property.id}"></canvas>
+                </div>
+            `;
+            
+            // Create chart after element is added to DOM
+            setTimeout(() => {
+                createPropertyChart(property.id, property, stats);
+            }, 100);
+            
+            return chartCard;
+        }
+
+        function createPropertyChart(propertyId, property, stats) {
+            const ctx = document.getElementById(`chart-${propertyId}`).getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (charts[`chart-${propertyId}`]) {
+                charts[`chart-${propertyId}`].destroy();
+            }
+
+            let chartConfig = {};
+
+            switch (stats.type) {
+                case 'numeric':
+                    chartConfig = {
+                        type: 'bar',
+                        data: {
+                            labels: stats.distribution.map(d => d.range),
+                            datasets: [{
+                                label: 'Distribution',
+                                data: stats.distribution.map(d => d.count),
+                                backgroundColor: '#3b82f6',
+                                borderColor: '#2563eb',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: `Average: ${stats.average} | Range: ${stats.min} - ${stats.max}`
+                                }
+                            }
+                        }
+                    };
+                    break;
+
+                case 'categorical':
+                    chartConfig = {
+                        type: 'doughnut',
+                        data: {
+                            labels: stats.distribution.map(d => d.value),
+                            datasets: [{
+                                data: stats.distribution.map(d => d.count),
+                                backgroundColor: [
+                                    '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981',
+                                    '#f59e0b', '#ef4444', '#ec4899', '#84cc16'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    };
+                    break;
+
+                case 'temporal':
+                    chartConfig = {
+                        type: 'line',
+                        data: {
+                            labels: stats.timelineData.map(d => d.month),
+                            datasets: [{
+                                label: 'Timeline',
+                                data: stats.timelineData.map(d => d.count),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: `Range: ${stats.earliestDate} to ${stats.latestDate}`
+                                }
+                            }
+                        }
+                    };
+                    break;
+
+                default:
+                    // Simple info display for other types
+                    ctx.canvas.style.display = 'none';
+                    const container = ctx.canvas.parentElement;
+                    container.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                            <div style="font-size: 24px; margin-bottom: 8px;">${stats.totalEntries || 'N/A'}</div>
+                            <div>Total Entries</div>
+                            ${stats.message ? `<div style="margin-top: 12px; font-size: 12px;">${stats.message}</div>` : ''}
+                        </div>
+                    `;
+                    return;
+            }
+
+            charts[`chart-${propertyId}`] = new Chart(ctx, chartConfig);
         }
 
         async function updateStructureStats(structureId) {
