@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estatístico - Capacities</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #c53030;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .control-group select,
+        .control-group input {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .control-group button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .control-group button:hover {
+            background: #5a67d8;
+        }
+
+        .structure-details {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .property-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .property-table th,
+        .property-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .property-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .numeric-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Dashboard Estatístico</h1>
+            <p>Análise completa do seu espaço Capacities</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="structureSelect">Estrutura:</label>
+                <select id="structureSelect">
+                    <option value="">Carregando...</option>
+                </select>
+                
+                <label for="analysisType">Tipo de Análise:</label>
+                <select id="analysisType">
+                    <option value="overview">Visão Geral</option>
+                    <option value="numeric">Propriedades Numéricas</option>
+                    <option value="references">Referências</option>
+                    <option value="temporal">Atividade Temporal</option>
+                </select>
+                
+                <button onclick="analyzeStructure()">Analisar</button>
+                <button onclick="refreshData()">🔄 Atualizar</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Estatísticas Gerais -->
+            <div class="card">
+                <h3>📈 Estatísticas do Espaço</h3>
+                <div id="spaceStats" class="loading">Carregando...</div>
+            </div>
+
+            <!-- Top Estruturas -->
+            <div class="card">
+                <h3>🏆 Top Estruturas</h3>
+                <div id="topStructures" class="loading">Carregando...</div>
+            </div>
+
+            <!-- Gráfico de Objetos por Estrutura -->
+            <div class="card">
+                <h3>📊 Objetos por Estrutura</h3>
+                <div class="chart-container">
+                    <canvas id="objectsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Atividade Temporal -->
+            <div class="card">
+                <h3>⏰ Atividade Temporal</h3>
+                <div class="chart-container">
+                    <canvas id="temporalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalhes da Estrutura Selecionada -->
+        <div id="structureDetails" class="structure-details" style="display: none;">
+            <h3 id="structureTitle">Análise da Estrutura</h3>
+            <div id="structureContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let objectsChart = null;
+        let temporalChart = null;
+
+        // Inicializar dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSpaceInfo();
+            loadDashboardData();
+        });
+
+        // Carregar informações do espaço
+        async function loadSpaceInfo() {
+            try {
+                const response = await fetch('/api/dashboard/space-stats');
+                const data = await response.json();
+                
+                if (data.success) {
+                    populateStructureSelect(data.data.structures);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar informações do espaço:', error);
+            }
+        }
+
+        // Preencher select de estruturas
+        function populateStructureSelect(structures) {
+            const select = document.getElementById('structureSelect');
+            select.innerHTML = '<option value="">Selecione uma estrutura...</option>';
+            
+            Object.entries(structures).forEach(([id, structure]) => {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = `${structure.name} (${structure.count} objetos)`;
+                select.appendChild(option);
+            });
+        }
+
+        // Carregar dados do dashboard
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/dashboard');
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentData = data.data;
+                    displaySpaceStats(data.data.space);
+                    displayTopStructures(data.data.space.topStructures);
+                    createObjectsChart(data.data.space.structures);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do dashboard:', error);
+                showError('Erro ao carregar dados do dashboard');
+            }
+        }
+
+        // Exibir estatísticas do espaço
+        function displaySpaceStats(space) {
+            const container = document.getElementById('spaceStats');
+            
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">${space.totalStructures}</div>
+                        <div class="stat-label">Estruturas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${space.totalObjects}</div>
+                        <div class="stat-label">Total de Objetos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${space.totalCollections || 0}</div>
+                        <div class="stat-label">Coleções</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${Object.keys(space.structures).length}</div>
+                        <div class="stat-label">Estruturas Ativas</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Exibir top estruturas
+        function displayTopStructures(topStructures) {
+            const container = document.getElementById('topStructures');
+            
+            if (topStructures.length === 0) {
+                container.innerHTML = '<p>Nenhuma estrutura encontrada</p>';
+                return;
+            }
+
+            let html = '<div class="stats-grid">';
+            topStructures.slice(0, 4).forEach(([id, structure]) => {
+                html += `
+                    <div class="stat-item">
+                        <div class="stat-number">${structure.count}</div>
+                        <div class="stat-label">${structure.name}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        // Criar gráfico de objetos por estrutura
+        function createObjectsChart(structures) {
+            const ctx = document.getElementById('objectsChart').getContext('2d');
+            
+            if (objectsChart) {
+                objectsChart.destroy();
+            }
+
+            const labels = Object.values(structures).map(s => s.name).slice(0, 10);
+            const data = Object.values(structures).map(s => s.count).slice(0, 10);
+
+            objectsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Número de Objetos',
+                        data: data,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Analisar estrutura selecionada
+        async function analyzeStructure() {
+            const structureId = document.getElementById('structureSelect').value;
+            const analysisType = document.getElementById('analysisType').value;
+            
+            if (!structureId) {
+                alert('Por favor, selecione uma estrutura');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard/structure/${structureId}/${analysisType === 'overview' ? '' : analysisType}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayStructureAnalysis(structureId, analysisType, data.data);
+                }
+            } catch (error) {
+                console.error('Erro ao analisar estrutura:', error);
+                showError('Erro ao analisar estrutura');
+            }
+        }
+
+        // Exibir análise da estrutura
+        function displayStructureAnalysis(structureId, analysisType, data) {
+            const detailsContainer = document.getElementById('structureDetails');
+            const titleContainer = document.getElementById('structureTitle');
+            const contentContainer = document.getElementById('structureContent');
+            
+            const structure = currentData.space.structures[structureId];
+            titleContainer.textContent = `Análise: ${structure.name}`;
+            
+            let html = '';
+            
+            switch (analysisType) {
+                case 'overview':
+                    html = createOverviewHTML(data);
+                    break;
+                case 'numeric':
+                    html = createNumericPropertiesHTML(data);
+                    break;
+                case 'references':
+                    html = createReferencesHTML(data);
+                    break;
+                case 'temporal':
+                    html = createTemporalHTML(data);
+                    break;
+            }
+            
+            contentContainer.innerHTML = html;
+            detailsContainer.style.display = 'block';
+            
+            // Criar gráfico temporal se aplicável
+            if (analysisType === 'temporal' && data.daily) {
+                createTemporalChart(data.daily);
+            }
+        }
+
+        // Criar HTML para visão geral
+        function createOverviewHTML(data) {
+            return `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">${data.basic?.objectCount || 0}</div>
+                        <div class="stat-label">Total de Objetos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${Object.keys(data.numericProperties || {}).length}</div>
+                        <div class="stat-label">Propriedades Numéricas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${data.references?.totalReferences || 0}</div>
+                        <div class="stat-label">Total de Referências</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${data.temporal?.total || 0}</div>
+                        <div class="stat-label">Eventos Temporais</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Criar HTML para propriedades numéricas
+        function createNumericPropertiesHTML(data) {
+            if (!data || Object.keys(data).length === 0) {
+                return '<p>Nenhuma propriedade numérica encontrada</p>';
+            }
+
+            let html = '<table class="property-table"><thead><tr><th>Propriedade</th><th>Contagem</th><th>Média</th><th>Mediana</th><th>Min</th><th>Max</th><th>Desvio Padrão</th></tr></thead><tbody>';
+            
+            Object.entries(data).forEach(([property, stats]) => {
+                html += `
+                    <tr>
+                        <td><strong>${property}</strong></td>
+                        <td class="numeric-value">${stats.count}</td>
+                        <td class="numeric-value">${stats.average.toFixed(2)}</td>
+                        <td class="numeric-value">${stats.median.toFixed(2)}</td>
+                        <td class="numeric-value">${stats.min}</td>
+                        <td class="numeric-value">${stats.max}</td>
+                        <td class="numeric-value">${stats.standardDeviation.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            return html;
+        }
+
+        // Criar HTML para referências
+        function createReferencesHTML(data) {
+            if (!data || !data.references || Object.keys(data.references).length === 0) {
+                return '<p>Nenhuma referência encontrada</p>';
+            }
+
+            let html = `<p><strong>Total de Referências:</strong> ${data.totalReferences}</p>`;
+            html += '<table class="property-table"><thead><tr><th>Propriedade</th><th>Objetos Referenciados</th><th>Total de Referências</th></tr></thead><tbody>';
+            
+            Object.entries(data.references).forEach(([property, refs]) => {
+                const totalRefs = Object.values(refs).reduce((sum, count) => sum + count, 0);
+                html += `
+                    <tr>
+                        <td><strong>${property}</strong></td>
+                        <td>${Object.keys(refs).length}</td>
+                        <td class="numeric-value">${totalRefs}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            return html;
+        }
+
+        // Criar HTML para análise temporal
+        function createTemporalHTML(data) {
+            if (!data || !data.daily || data.daily.length === 0) {
+                return '<p>Nenhum dado temporal encontrado</p>';
+            }
+
+            let html = `<p><strong>Total de Eventos:</strong> ${data.total}</p>`;
+            html += '<div class="chart-container"><canvas id="structureTemporalChart"></canvas></div>';
+            
+            return html;
+        }
+
+        // Criar gráfico temporal
+        function createTemporalChart(dailyData) {
+            const ctx = document.getElementById('structureTemporalChart').getContext('2d');
+            
+            if (temporalChart) {
+                temporalChart.destroy();
+            }
+
+            const labels = dailyData.map(d => d.date);
+            const data = dailyData.map(d => d.count);
+
+            temporalChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Eventos por Dia',
+                        data: data,
+                        borderColor: 'rgba(118, 75, 162, 1)',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Atualizar dados
+        function refreshData() {
+            loadDashboardData();
+            if (document.getElementById('structureSelect').value) {
+                analyzeStructure();
+            }
+        }
+
+        // Mostrar erro
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(errorDiv, container.firstChild);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

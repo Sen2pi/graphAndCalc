@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const dashboardRoutes = require('./routes/dashboard');
@@ -11,6 +12,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Servir arquivos estáticos
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -38,6 +42,7 @@ app.get('/', (req, res) => {
     endpoints: {
       dashboard: '/api/dashboard',
       health: '/health',
+      web: '/index.html',
       docs: 'https://docs.capacities.io/developer/api'
     },
     timestamp: new Date().toISOString()
@@ -69,6 +74,7 @@ app.use('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`📊 Dashboard disponível em: http://localhost:${PORT}/api/dashboard`);
+  console.log(`🌐 Interface web: http://localhost:${PORT}/index.html`);
   console.log(`🏥 Health check: http://localhost:${PORT}/health`);
   console.log(`📚 Capacities API: https://docs.capacities.io/developer/api`);
 });
