@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estatístico - Capacities</title>
+    <title>StatDash - Capacities Analytics Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
@@ -213,63 +213,63 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Dashboard Estatístico</h1>
-            <p>Análise completa do seu espaço Capacities</p>
+            <h1>📊 StatDash</h1>
+            <p>Advanced Analytics Dashboard for Capacities</p>
         </div>
 
         <div class="controls">
             <div class="control-group">
-                <label for="structureSelect">Estrutura:</label>
+                <label for="structureSelect">Structure:</label>
                 <select id="structureSelect">
-                    <option value="">Carregando...</option>
+                    <option value="">Loading...</option>
                 </select>
                 
-                <label for="analysisType">Tipo de Análise:</label>
+                <label for="analysisType">Analysis Type:</label>
                 <select id="analysisType">
-                    <option value="overview">Visão Geral</option>
-                    <option value="numeric">Propriedades Numéricas</option>
-                    <option value="references">Referências</option>
-                    <option value="temporal">Atividade Temporal</option>
+                    <option value="overview">Overview</option>
+                    <option value="numeric">Numeric Properties</option>
+                    <option value="references">References</option>
+                    <option value="temporal">Temporal Activity</option>
                 </select>
                 
-                <button onclick="analyzeStructure()">Analisar</button>
-                <button onclick="refreshData()">🔄 Atualizar</button>
+                <button type="button" onclick="analyzeStructure()">Analyze</button>
+                <button type="button" onclick="refreshData()">🔄 Refresh</button>
             </div>
         </div>
 
         <div class="dashboard-grid">
-            <!-- Estatísticas Gerais -->
+            <!-- Workspace Statistics -->
             <div class="card">
-                <h3>📈 Estatísticas do Espaço</h3>
-                <div id="spaceStats" class="loading">Carregando...</div>
+                <h3>📈 Workspace Statistics</h3>
+                <div id="spaceStats" class="loading">Loading...</div>
             </div>
 
-            <!-- Top Estruturas -->
+            <!-- Top Structures -->
             <div class="card">
-                <h3>🏆 Top Estruturas</h3>
-                <div id="topStructures" class="loading">Carregando...</div>
+                <h3>🏆 Top Structures</h3>
+                <div id="topStructures" class="loading">Loading...</div>
             </div>
 
-            <!-- Gráfico de Objetos por Estrutura -->
+            <!-- Objects by Structure Chart -->
             <div class="card">
-                <h3>📊 Objetos por Estrutura</h3>
+                <h3>📊 Objects by Structure</h3>
                 <div class="chart-container">
                     <canvas id="objectsChart"></canvas>
                 </div>
             </div>
 
-            <!-- Gráfico de Atividade Temporal -->
+            <!-- Temporal Activity Chart -->
             <div class="card">
-                <h3>⏰ Atividade Temporal</h3>
+                <h3>⏰ Temporal Activity</h3>
                 <div class="chart-container">
                     <canvas id="temporalChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Detalhes da Estrutura Selecionada -->
+        <!-- Structure Analysis Details -->
         <div id="structureDetails" class="structure-details" style="display: none;">
-            <h3 id="structureTitle">Análise da Estrutura</h3>
+            <h3 id="structureTitle">Structure Analysis</h3>
             <div id="structureContent"></div>
         </div>
     </div>

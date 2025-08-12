@@ -6,6 +6,26 @@ const AnalyticsService = require('../services/analytics');
 const capacitiesAPI = new CapacitiesAPI();
 const analyticsService = new AnalyticsService(capacitiesAPI);
 
+// Test connection route
+router.get('/test', async (req, res) => {
+  try {
+    const testResult = await capacitiesAPI.testConnection();
+    res.json({
+      success: testResult.success,
+      data: testResult.data,
+      error: testResult.error,
+      details: testResult.details,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Rota principal do dashboard
 router.get('/', async (req, res) => {
   try {

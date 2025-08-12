@@ -1,0 +1,93 @@
+Capacities API (Beta)
+The Capacities API is a REST API that allows you access, create and manipulate your content.
+
+TIP
+
+The Capacities API in a very early stage. Many endpoint you'd expect for a REST API are not yet available. We'll over time add more endpoints as the feature set of Capacities grows. If you need a specific endpoint, you can create a ticket on our feedback board.
+
+INFO
+
+The Capacities API is currently in beta and is subject to change. We will do our best to communicate any changes to the API as early as possible. As soon as you created an access token, you will be added to our email list and will receive updates about the API. All extension of the API will be communicated in our What's new section and our general newsletter.
+
+Authentication
+The Capacities API uses Bearer authentication (token-based authentication, OAuth 2.0 RFC 6750). You can obtain an access token in the desktop app at Settings > Capacities API.
+
+WARNING
+
+The access token allows access to all your data. Do not share it with anyone you don't trust. If you suspect that your access token has been compromised, you should immediately revoke it and generate a new one.
+
+The obtained token needs to be passed in the header of each request as follows:
+
+http
+Authorization: Bearer <your_access_token>
+WARNING
+
+For security reasons, you should only use HTTPS to communicate with the Capacities. The access token should never be exposed in the browser.
+
+Rate limits
+The Capacities API is protected with a rate limits to prevent abuse. If you exceed the rate limits, you will receive a 429 Too Many Requests response. The rate limits are applied on a user basis for every endpoint individually.
+
+Current rate limits can be obtained from the response header based on the RateLimit-Remaining header fields (HTTP standardization draft, IETF).
+
+http
+RateLimit-Policy: 120;w=60 # <requests>;w=<window in seconds>
+RateLimit-Limit: 100 # requests per rate limit window
+RateLimit-Remaining: 98 # requests left in the current rate limit window
+RateLimit-Reset: 53 # seconds until the rate limit is reset
+Errors
+The Capacities API uses standard HTTP status codes to indicate the success or failure of an API request. In general, codes in the 2xx range indicate success, codes in the 4xx range indicate an error that failed because of the the information provided (e.g., a required parameter was omitted, non-existing content was referenced, etc.), and codes in the 5xx range indicate an error with Capacities's servers.
+
+Here are some common errors you might encounter when using the Capacities API:
+
+400 Bad Request - The request was unacceptable, often due to missing a required parameter.
+401 Unauthorized - No valid access token provided or not allowed to access resource.
+404 Not Found - The requested resource doesn't exist.
+429 Too Many Requests - Too many requests hit the API too quickly. We recommend to implement rules based on the rate limit headers or add an exponential backoff of your requests (More here).
+500 Something went wrong - Something went wrong on Capacities's end.
+503 Temporarily unavailable - The API is inactive or in maintenance.
+555 Temporarily unavailable - Capacities is getting an update. The API is temporarily unavailable.
+API Reference
+The Capacities API offers various endpoints to interact with your data. You can read about all API endpoints here:
+
+Reference
+
+If you need programmatic access to the API specification, you can download the OpenAPI 3.0 Specification.
+
+INFO
+
+The Capacities API is in beta and endpoints will be added over time. If you want to share suggestions for endpoints or propose extensions and changes to existing changes, please do this in our forum discussion.
+
+Important API knowledge
+Content IDs
+The Capacities API uses unique IDs to reference content.
+
+SpaceId: You can find the ID of a space under Settings > Space settings.
+
+ObjectId: You can find the ID of an object in the app by clicking on the object menu and selecting Copy object reference. In the clipboard, you will find an URL to the object. The last part of the URL is the ID of the object. For example, the ID of the object with the URL capacities://0e1dc99b-693d-4d19-9ga3-ab637a55d1b3/95896927-2dd3-4167-8a15-0e1ad56a5e8d is 95896927-2dd3-4167-8a15-0e1ad56a5e8d.
+
+Structures
+Object types in Capacities are represented as structures in the API. Each structure has a unique ID. Every object in Capacities has a structureId property that references the structure of the object.
+
+All structures of a space can be obtained by using the GET /space-info endpoint.
+
+Basic structures (structures provided by Capacities) have the following structureIds:
+
+Structure	structureId
+Space	RootSpace
+Object type	RootStructure
+Collection	RootDatabase
+Query	RootQuery
+Page	RootPage
+Image	MediaImage
+PDF	MediaPDF
+Audio	MediaAudio
+Video	MediaVideo
+Weblink	MediaWebResource
+File	MediaFile
+Tweet	MediaTweet
+AI Chat	RootAIChat
+Table	RootSimpleTable
+Daily Note	RootDailyNote
+Tag	RootTag
+Property Definitions
+Each structure has a set of property definitions (properties on your object pages). The property definitions are represented as a list of objects containing information about the type of property, etc. You can obtain property definition by using the GET /space-info endpoint.

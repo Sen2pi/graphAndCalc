@@ -5,7 +5,25 @@
 
 ![StatDash Logo](logo.png)
 
+[![Node.js](https://img.shields.io/badge/Node.js-16+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Capacities](https://img.shields.io/badge/Capacities-API-orange.svg)](https://capacities.io)
+[![Status](https://img.shields.io/badge/Status-Beta-yellow.svg)](https://github.com/Sen2pi/graphAndCalc)
+
 *StatDash provides deep analytics for your Capacities workspace, offering statistical insights, object relationship mapping, and temporal analysis through an intuitive web interface.*
+
+---
+
+## 🎯 **What StatDash Does**
+
+StatDash transforms your Capacities workspace into a **data-driven insights engine** by providing:
+
+- 📊 **Real-time Analytics**: Live statistics and metrics from your knowledge base
+- 🔍 **Deep Insights**: Advanced analysis of object properties and relationships  
+- 📈 **Interactive Visualizations**: Beautiful charts and graphs for data exploration
+- ⏰ **Temporal Analysis**: Understanding how your knowledge evolves over time
+- 🔗 **Relationship Mapping**: Discovering connections between different objects
+- 📱 **Modern Interface**: Responsive web dashboard accessible from any device
 
 ## ✨ Features
 
@@ -222,71 +240,98 @@ curl "http://localhost:3000/api/dashboard/space-stats" \
 npm run example
 ```
 
-## 🚨 Limitações e Considerações
+## 🚨 Limitations & Considerations
 
-### Rate Limiting
-- A API do Capacities possui limites de taxa
-- Implemente retry com backoff exponencial para requisições
-- Monitore os headers `RateLimit-Remaining` e `RateLimit-Reset`
+### ⏱️ **Rate Limiting**
+- The Capacities API has rate limits
+- Implement retry with exponential backoff for requests
+- Monitor `RateLimit-Remaining` and `RateLimit-Reset` headers
 
-### Dados em Larga Escala
-- Para espaços com muitos objetos, considere implementar paginação
-- Cache de resultados para melhorar performance
-- Análises em background para relatórios complexos
+### 📈 **Large Scale Data**
+- For workspaces with many objects, consider implementing pagination
+- Cache results to improve performance
+- Background analysis for complex reports
 
-### Segurança
-- **NUNCA** exponha seu token da API no frontend
-- Use HTTPS em produção
-- Implemente autenticação se necessário
+### 🔒 **Security**
+- **NEVER** expose your API token in the frontend
+- Use HTTPS in production
+- Implement authentication if necessary
 
 ## 🐛 Troubleshooting
 
-### Erro de Autenticação
+### 🔐 **Authentication Error**
 ```
-Error: CAPACITIES_API_TOKEN é obrigatório no arquivo .env
+Error: CAPACITIES_API_TOKEN is required in .env file
 ```
-**Solução**: Verifique se o arquivo `.env` existe e contém o token correto.
+**Solution**: Verify that the `.env` file exists and contains the correct token.
 
-### Erro de Conexão
+### 🔌 **Connection Error**
 ```
 Error: connect ECONNREFUSED
 ```
-**Solução**: Verifique se a API do Capacities está acessível e se o token é válido.
+**Solution**: Check if the Capacities API is accessible and if the token is valid.
 
-### Dados Não Carregam
-**Solução**: 
-1. Verifique o console do navegador para erros
-2. Confirme se o servidor está rodando
-3. Verifique as permissões do token da API
+### 📊 **Data Not Loading**
+**Solution**: 
+1. Check browser console for errors
+2. Confirm the server is running
+3. Verify API token permissions
 
-## 🤝 Contribuição
+## 🤝 Contributing
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+We welcome contributions! Here's how you can help:
 
-## 📄 Licença
+1. **Fork** the project
+2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+### 🎯 **Areas for Contribution**
+- New analysis types
+- Additional chart visualizations
+- Performance improvements
+- Documentation enhancements
+- Bug fixes and testing
 
-## 🔗 Links Úteis
+## 📄 License
 
-- [Documentação da API Capacities](https://docs.capacities.io/developer/api)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Useful Links
+
+- [Capacities API Documentation](https://docs.capacities.io/developer/api)
 - [Capacities Website](https://capacities.io)
 - [Chart.js Documentation](https://www.chartjs.org/docs/)
 - [Express.js Documentation](https://expressjs.com/)
 
-## 📞 Suporte
+## 📞 Support
 
-Se você encontrar problemas ou tiver dúvidas:
+If you encounter issues or have questions:
 
-1. Verifique esta documentação
-2. Consulte os logs do servidor
-3. Abra uma issue no repositório
-4. Entre em contato com a equipe de desenvolvimento
+1. **Check** this documentation
+2. **Review** server logs
+3. **Open** an issue in the repository
+4. **Contact** the development team
+
+## 🚀 **Getting Started Quick**
+
+```bash
+# Clone and setup
+git clone https://github.com/Sen2pi/graphAndCalc.git
+cd graphAndCalc
+npm install
+
+# Configure your environment
+cp env.example .env
+# Edit .env with your Capacities credentials
+
+# Start StatDash
+npm start
+```
+
+Then visit `http://localhost:3000/index.html` to access your dashboard!
 
 ---
 
-**Desenvolvido com ❤️ para a comunidade Capacities**
+**Built with ❤️ for the Capacities community**

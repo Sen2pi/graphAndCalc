@@ -27,10 +27,21 @@ class CapacitiesAPI {
   // Obter informações do espaço
   async getSpaceInfo() {
     try {
-      const response = await this.client.get(`/space-info`);
+      console.log(`🔍 Attempting to get space info from: ${this.baseURL}/space-info?spaceid=${this.spaceId}`);
+      console.log(`🔑 Using token: ${this.apiToken ? '✅ Configured' : '❌ Missing'}`);
+      console.log(`🏠 Space ID: ${this.spaceId}`);
+      
+      const response = await this.client.get(`/space-info`, {
+        params: { spaceid: this.spaceId }
+      });
+      console.log(`✅ Space info retrieved successfully`);
       return response.data;
     } catch (error) {
-      console.error('Erro ao obter informações do espaço:', error.message);
+      console.error('❌ Error getting space info:');
+      console.error(`   Status: ${error.response?.status}`);
+      console.error(`   Message: ${error.response?.data?.message || error.message}`);
+      console.error(`   URL: ${this.baseURL}/space-info?spaceid=${this.spaceId}`);
+      console.error(`   Details:`, error.response?.data);
       throw error;
     }
   }
@@ -97,6 +108,28 @@ class CapacitiesAPI {
     } catch (error) {
       console.error(`Erro ao obter objetos da coleção ${collectionId}:`, error.message);
       throw error;
+    }
+  }
+
+  // Testar conexão com a API
+  async testConnection() {
+    try {
+      console.log('🧪 Testing Capacities API connection...');
+      console.log(`📍 Base URL: ${this.baseURL}`);
+      console.log(`🔑 Token: ${this.apiToken ? '✅ Present' : '❌ Missing'}`);
+      console.log(`🏠 Space ID: ${this.spaceId}`);
+      
+      const response = await this.client.get(`/space-info`, {
+        params: { spaceid: this.spaceId }
+      });
+      console.log('✅ Connection successful!');
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Connection failed:');
+      console.error(`   Status: ${error.response?.status}`);
+      console.error(`   Message: ${error.response?.data?.message || error.message}`);
+      console.error(`   Details:`, error.response?.data);
+      return { success: false, error: error.message, details: error.response?.data };
     }
   }
 }
