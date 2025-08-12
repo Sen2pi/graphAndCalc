@@ -750,6 +750,87 @@ function calculateRelationshipStats(relationships) {
   return stats;
 }
 
+// Gerar diagrama de relacionamentos estilo MySQL reverso
+router.get('/structure/:structureId/relationship-diagram', async (req, res) => {
+  try {
+    const { structureId } = req.params;
+    
+    // Obter informações do espaço
+    const spaceInfo = await capacitiesAPI.getSpaceInfo();
+    const structure = spaceInfo.structures?.find(s => s.id === structureId);
+    
+    if (!structure) {
+      return res.status(404).json({
+        success: false,
+        error: 'Structure not found'
+      });
+    }
+
+    // Gerar dados do diagrama no formato MySQL-like
+    const diagram = generateRelationshipDiagram(structure, spaceInfo.structures || []);
+    
+    res.json({
+      success: true,
+      data: diagram,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Endpoint para estatísticas personalizadas com seleção de propriedades X/Y
+router.post('/structure/:structureId/custom-chart', async (req, res) => {
+  try {
+    const { structureId } = req.params;
+    const { chartType, xAxis, yAxis, selectedProperties, aggregation } = req.body;
+
+    if (!xAxis || (chartType !== 'single-value' && !yAxis)) {
+      return res.status(400).json({
+        success: false,
+        error: 'X-axis is required, Y-axis is required for charts (not single values)'
+      });
+    }
+
+    // Obter informações da estrutura
+    const spaceInfo = await capacitiesAPI.getSpaceInfo();
+    const structure = spaceInfo.structures?.find(s => s.id === structureId);
+
+    if (!structure) {
+      return res.status(404).json({
+        success: false,
+        error: 'Structure not found'
+      });
+    }
+
+    // Gerar estatísticas customizadas
+    const chartData = await generateCustomChart(
+      structure, 
+      chartType, 
+      xAxis, 
+      yAxis, 
+      selectedProperties,
+      aggregation || 'count'
+    );
+
+    res.json({
+      success: true,
+      data: chartData,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Estatísticas de coleções
 router.get('/collections', async (req, res) => {
   try {
@@ -784,5 +865,293 @@ router.get('/collections', async (req, res) => {
     });
   }
 });
+
+// Função para gerar diagrama de relacionamentos estilo MySQL
+function generateRelationshipDiagram(structure, allStructures) {
+  const diagram = {
+    mainStructure: {
+      id: structure.id,
+      name: structure.title || structure.name || structure.id,
+      color: structure.labelColor || 'blue',
+      properties: structure.propertyDefinitions?.map(prop => ({
+        id: prop.id,
+        name: prop.name,
+        type: prop.type,
+        required: prop.required || false,
+        primaryKey: prop.id === 'id' || prop.id === 'entity_id',
+        foreignKey: prop.type === 'object' || prop.type === 'entity'
+      })) || [],
+      position: { x: 400, y: 200 }
+    },
+    relatedStructures: [],
+    relationships: []
+  };
+
+  let position = { x: 100, y: 100 };
+  const usedPositions = new Set();
+
+  // Encontrar estruturas relacionadas
+  const relatedStructureIds = new Set();
+
+  // 1. Relacionamentos outgoing (esta estrutura referencia outras)
+  structure.propertyDefinitions?.forEach(prop => {
+    if ((prop.type === 'object' || prop.type === 'entity') && prop.structureId) {
+      relatedStructureIds.add(prop.structureId);
+    }
+  });
+
+  // 2. Relacionamentos incoming (outras estruturas referenciam esta)
+  allStructures.forEach(otherStruct => {
+    if (otherStruct.id !== structure.id) {
+      otherStruct.propertyDefinitions?.forEach(prop => {
+        if ((prop.type === 'object' || prop.type === 'entity') && prop.structureId === structure.id) {
+          relatedStructureIds.add(otherStruct.id);
+        }
+      });
+    }
+  });
+
+  // Adicionar estruturas relacionadas ao diagrama
+  Array.from(relatedStructureIds).forEach((relatedId, index) => {
+    const relatedStructure = allStructures.find(s => s.id === relatedId);
+    if (relatedStructure) {
+      // Calcular posição em círculo ao redor da estrutura principal
+      const angle = (index * 2 * Math.PI) / relatedStructureIds.size;
+      const radius = 300;
+      const x = 400 + radius * Math.cos(angle);
+      const y = 200 + radius * Math.sin(angle);
+
+      diagram.relatedStructures.push({
+        id: relatedStructure.id,
+        name: relatedStructure.title || relatedStructure.name || relatedStructure.id,
+        color: relatedStructure.labelColor || 'gray',
+        properties: relatedStructure.propertyDefinitions?.map(prop => ({
+          id: prop.id,
+          name: prop.name,
+          type: prop.type,
+          required: prop.required || false,
+          primaryKey: prop.id === 'id' || prop.id === 'entity_id',
+          foreignKey: prop.type === 'object' || prop.type === 'entity'
+        })).slice(0, 10) || [], // Limitar propriedades para clareza
+        position: { x: Math.round(x), y: Math.round(y) }
+      });
+    }
+  });
+
+  // Gerar relacionamentos
+  structure.propertyDefinitions?.forEach(prop => {
+    if ((prop.type === 'object' || prop.type === 'entity') && prop.structureId) {
+      const targetStructure = diagram.relatedStructures.find(s => s.id === prop.structureId);
+      if (targetStructure) {
+        diagram.relationships.push({
+          from: structure.id,
+          to: prop.structureId,
+          fromProperty: prop.id,
+          toProperty: 'id',
+          type: 'one-to-many',
+          label: prop.name,
+          foreignKey: true
+        });
+      }
+    }
+  });
+
+  // Relacionamentos incoming
+  allStructures.forEach(otherStruct => {
+    if (otherStruct.id !== structure.id) {
+      otherStruct.propertyDefinitions?.forEach(prop => {
+        if ((prop.type === 'object' || prop.type === 'entity') && prop.structureId === structure.id) {
+          const sourceStructure = diagram.relatedStructures.find(s => s.id === otherStruct.id);
+          if (sourceStructure) {
+            diagram.relationships.push({
+              from: otherStruct.id,
+              to: structure.id,
+              fromProperty: prop.id,
+              toProperty: 'id',
+              type: 'many-to-one',
+              label: prop.name,
+              foreignKey: true
+            });
+          }
+        }
+      });
+    }
+  });
+
+  return diagram;
+}
+
+// Função para gerar estatísticas customizadas
+async function generateCustomChart(structure, chartType, xAxis, yAxis, selectedProperties, aggregation) {
+  const chartData = {
+    structureInfo: {
+      id: structure.id,
+      title: structure.title || structure.name || structure.id
+    },
+    chartType: chartType,
+    xAxis: xAxis,
+    yAxis: yAxis,
+    aggregation: aggregation,
+    data: null,
+    mockData: true
+  };
+
+  // Encontrar propriedades selecionadas
+  const xProperty = structure.propertyDefinitions?.find(p => p.id === xAxis);
+  const yProperty = yAxis ? structure.propertyDefinitions?.find(p => p.id === yAxis) : null;
+
+  if (!xProperty) {
+    throw new Error(`Property ${xAxis} not found in structure`);
+  }
+
+  if (yAxis && !yProperty) {
+    throw new Error(`Property ${yAxis} not found in structure`);
+  }
+
+  // Gerar dados baseados no tipo de gráfico
+  switch (chartType) {
+    case 'single-value':
+      chartData.data = generateSingleValueData(xProperty, aggregation);
+      break;
+    case 'progress':
+      chartData.data = generateProgressData(xProperty, aggregation);
+      break;
+    case 'bar':
+    case 'line':
+    case 'scatter':
+      chartData.data = generateXYChartData(xProperty, yProperty, chartType, aggregation);
+      break;
+    case 'pie':
+    case 'doughnut':
+      chartData.data = generateCategoricalData(xProperty);
+      break;
+    default:
+      throw new Error(`Unsupported chart type: ${chartType}`);
+  }
+
+  return chartData;
+}
+
+// Gerar dados para valor único
+function generateSingleValueData(property, aggregation) {
+  const mockValue = generateMockValueByType(property.type, aggregation);
+  
+  return {
+    value: mockValue,
+    label: property.name,
+    propertyType: property.type,
+    aggregation: aggregation,
+    unit: getUnitForProperty(property.type),
+    change: Math.random() > 0.5 ? '+' : '-',
+    changeValue: Math.floor(Math.random() * 20) + 1,
+    changeLabel: 'vs last period'
+  };
+}
+
+// Gerar dados para barra de progresso
+function generateProgressData(property, aggregation) {
+  const total = Math.floor(Math.random() * 1000) + 100;
+  const current = Math.floor(Math.random() * total);
+  const percentage = Math.round((current / total) * 100);
+  
+  return {
+    current: current,
+    total: total,
+    percentage: percentage,
+    label: property.name,
+    propertyType: property.type,
+    status: percentage > 75 ? 'success' : percentage > 50 ? 'warning' : 'danger',
+    unit: getUnitForProperty(property.type)
+  };
+}
+
+// Gerar dados para gráficos X/Y
+function generateXYChartData(xProperty, yProperty, chartType, aggregation) {
+  const dataPoints = Math.floor(Math.random() * 20) + 10;
+  const data = [];
+  
+  for (let i = 0; i < dataPoints; i++) {
+    const xValue = generateMockValueByType(xProperty.type, 'value', i);
+    const yValue = generateMockValueByType(yProperty.type, aggregation);
+    
+    data.push({
+      x: xValue,
+      y: yValue,
+      label: `${xProperty.name}: ${xValue}, ${yProperty.name}: ${yValue}`
+    });
+  }
+  
+  return {
+    datasets: [{
+      label: `${yProperty.name} by ${xProperty.name}`,
+      data: data,
+      backgroundColor: 'rgba(59, 130, 246, 0.8)',
+      borderColor: 'rgba(59, 130, 246, 1)',
+      borderWidth: 2
+    }],
+    xAxisLabel: xProperty.name,
+    yAxisLabel: yProperty.name
+  };
+}
+
+// Gerar dados categóricos
+function generateCategoricalData(property) {
+  const categories = ['Category A', 'Category B', 'Category C', 'Category D', 'Category E'];
+  const data = categories.map(cat => ({
+    label: cat,
+    value: Math.floor(Math.random() * 100) + 10
+  }));
+  
+  return {
+    labels: data.map(d => d.label),
+    datasets: [{
+      data: data.map(d => d.value),
+      backgroundColor: [
+        '#3B82F6', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B'
+      ]
+    }],
+    propertyName: property.name
+  };
+}
+
+// Gerar valor mock baseado no tipo
+function generateMockValueByType(propertyType, aggregation, index = null) {
+  switch (propertyType) {
+    case 'number':
+    case 'currency':
+      return Math.floor(Math.random() * 1000) + 1;
+    case 'date':
+    case 'dateTime':
+      if (index !== null) {
+        const baseDate = new Date();
+        baseDate.setDate(baseDate.getDate() - (30 - index));
+        return baseDate.toISOString().split('T')[0];
+      }
+      return new Date().toISOString().split('T')[0];
+    case 'text':
+    case 'richText':
+      if (aggregation === 'count') return Math.floor(Math.random() * 50) + 1;
+      return `Text ${Math.floor(Math.random() * 100)}`;
+    case 'select':
+    case 'multiSelect':
+      const options = ['Option A', 'Option B', 'Option C'];
+      return options[Math.floor(Math.random() * options.length)];
+    case 'boolean':
+      return Math.random() > 0.5;
+    default:
+      return Math.floor(Math.random() * 100) + 1;
+  }
+}
+
+// Obter unidade para tipo de propriedade
+function getUnitForProperty(propertyType) {
+  switch (propertyType) {
+    case 'currency': return '$';
+    case 'number': return '';
+    case 'date': return '';
+    case 'text': return 'chars';
+    default: return '';
+  }
+}
 
 module.exports = router;

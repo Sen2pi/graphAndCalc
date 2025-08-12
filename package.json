@@ -1,7 +1,7 @@
 {
-  "name": "capacities-dashboard",
-  "version": "1.0.0",
-  "description": "Dashboard estatístico para Capacities com gráficos e análises",
+  "name": "statdash",
+  "version": "2.0.0",
+  "description": "Dashboard estatístico poderoso para Capacities com análise avançada, gráficos interativos e mapeamento de relacionamentos",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

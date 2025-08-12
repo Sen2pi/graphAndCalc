@@ -780,6 +780,247 @@
         .type-phone { background-color: #f97316; }
         .type-file { background-color: #6b7280; }
         .type-unknown { background-color: var(--text-muted); }
+
+        /* Diagram Container */
+        .diagram-container {
+            min-height: 400px;
+            background-color: var(--bg-primary);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagram-structure {
+            position: absolute;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            min-width: 180px;
+            box-shadow: var(--card-shadow);
+            cursor: move;
+        }
+
+        .diagram-structure.main {
+            border-color: var(--accent-color);
+            border-width: 3px;
+        }
+
+        .diagram-structure-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .diagram-structure-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .diagram-structure-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .diagram-property {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 0;
+            font-size: 12px;
+        }
+
+        .diagram-property-icon {
+            width: 12px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .diagram-property.primary-key {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .diagram-property.foreign-key {
+            color: var(--warning-color);
+        }
+
+        .diagram-relationship {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .diagram-relationship-line {
+            stroke: var(--accent-color);
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+
+        .diagram-relationship-label {
+            font-size: 11px;
+            fill: var(--text-secondary);
+            text-anchor: middle;
+        }
+
+        /* Statistics Builder */
+        .stats-builder {
+            margin-bottom: 24px;
+        }
+
+        .builder-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .builder-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .builder-field label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .custom-chart-result {
+            margin-top: 24px;
+            padding: 20px;
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Single Value Card */
+        .single-value-card {
+            text-align: center;
+            padding: 32px;
+            background: linear-gradient(135deg, var(--accent-color), #8b5cf6);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+        }
+
+        .single-value-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .single-value-label {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .single-value-change {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .change-positive {
+            color: #10b981;
+        }
+
+        .change-negative {
+            color: #ef4444;
+        }
+
+        /* Progress Bar */
+        .progress-card {
+            padding: 24px;
+            text-align: center;
+        }
+
+        .progress-header {
+            margin-bottom: 20px;
+        }
+
+        .progress-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .progress-values {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: var(--bg-tertiary);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress-success { background-color: var(--success-color); }
+        .progress-warning { background-color: var(--warning-color); }
+        .progress-danger { background-color: var(--error-color); }
+
+        .progress-percentage {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .builder-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -954,6 +1195,83 @@
                         </div>
                         <div id="statisticsCharts" class="charts-grid">
                             <!-- Dynamic charts will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Relationship Diagram -->
+                    <div id="relationshipDiagramSection" class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-sitemap"></i> Relationship Diagram</h3>
+                            <p>Visual representation of relationships between structures (MySQL style)</p>
+                        </div>
+                        <div id="relationshipDiagram" class="diagram-container">
+                            <!-- Diagram will be rendered here -->
+                        </div>
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn primary-btn" onclick="loadRelationshipDiagram()">
+                                <i class="fas fa-sitemap"></i>
+                                Load Diagram
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Statistics Builder -->
+                    <div id="customStatsSection" class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-chart-bar"></i> Custom Statistics Builder</h3>
+                            <p>Create custom charts and statistics by selecting properties and chart types</p>
+                        </div>
+                        
+                        <div class="stats-builder">
+                            <div class="builder-row">
+                                <div class="builder-field">
+                                    <label>Chart Type:</label>
+                                    <select id="chartTypeSelect" class="form-select">
+                                        <option value="single-value">Single Value Card</option>
+                                        <option value="progress">Progress Bar</option>
+                                        <option value="bar">Bar Chart</option>
+                                        <option value="line">Line Chart</option>
+                                        <option value="pie">Pie Chart</option>
+                                        <option value="scatter">Scatter Plot</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="builder-field">
+                                    <label>Property (X-Axis):</label>
+                                    <select id="xAxisSelect" class="form-select">
+                                        <option value="">Select Property</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="builder-field" id="yAxisField">
+                                    <label>Property (Y-Axis):</label>
+                                    <select id="yAxisSelect" class="form-select">
+                                        <option value="">Select Property</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="builder-field">
+                                    <label>Aggregation:</label>
+                                    <select id="aggregationSelect" class="form-select">
+                                        <option value="count">Count</option>
+                                        <option value="sum">Sum</option>
+                                        <option value="average">Average</option>
+                                        <option value="min">Minimum</option>
+                                        <option value="max">Maximum</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button type="button" class="action-btn primary-btn" onclick="generateCustomChart()" id="generateCustomBtn">
+                                    <i class="fas fa-chart-line"></i>
+                                    Generate Chart
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="customChartResult" class="custom-chart-result" style="display: none;">
+                            <!-- Custom chart will be rendered here -->
                         </div>
                     </div>
 
@@ -2156,6 +2474,444 @@
         }
 
         // App will be initialized when DOM is loaded
+
+        // ===== FUNÇÕES PARA DIAGRAMA DE RELACIONAMENTOS =====
+        
+        async function loadRelationshipDiagram() {
+            if (!currentStructure) {
+                showError('Please select a structure first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard/structure/${currentStructure}/relationship-diagram`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderRelationshipDiagram(data.data);
+                } else {
+                    showError('Error loading relationship diagram: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error loading relationship diagram:', error);
+                showError('Error loading relationship diagram: ' + error.message);
+            }
+        }
+
+        function renderRelationshipDiagram(diagramData) {
+            const container = document.getElementById('relationshipDiagram');
+            container.innerHTML = '';
+            
+            // Create SVG container
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '600');
+            svg.style.position = 'relative';
+            
+            // Add arrow marker definition
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+            marker.setAttribute('id', 'arrowhead');
+            marker.setAttribute('markerWidth', '10');
+            marker.setAttribute('markerHeight', '7');
+            marker.setAttribute('refX', '9');
+            marker.setAttribute('refY', '3.5');
+            marker.setAttribute('orient', 'auto');
+            
+            const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+            polygon.setAttribute('fill', '#3b82f6');
+            
+            marker.appendChild(polygon);
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+            
+            // Render main structure
+            renderStructureBox(svg, diagramData.mainStructure, true);
+            
+            // Render related structures
+            diagramData.relatedStructures.forEach(structure => {
+                renderStructureBox(svg, structure, false);
+            });
+            
+            // Render relationships
+            diagramData.relationships.forEach(relationship => {
+                renderRelationship(svg, relationship, diagramData);
+            });
+            
+            container.appendChild(svg);
+        }
+
+        function renderStructureBox(svg, structure, isMain) {
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            group.setAttribute('transform', `translate(${structure.position.x}, ${structure.position.y})`);
+            
+            // Create structure box
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('width', '200');
+            rect.setAttribute('height', '120');
+            rect.setAttribute('rx', '8');
+            rect.setAttribute('fill', isMain ? '#f8fafc' : '#ffffff');
+            rect.setAttribute('stroke', isMain ? '#3b82f6' : '#e2e8f0');
+            rect.setAttribute('stroke-width', isMain ? '3' : '2');
+            
+            group.appendChild(rect);
+            
+            // Create header
+            const headerGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            headerGroup.setAttribute('transform', 'translate(10, 15)');
+            
+            const headerRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            headerRect.setAttribute('width', '180');
+            headerRect.setAttribute('height', '25');
+            headerRect.setAttribute('rx', '4');
+            headerRect.setAttribute('fill', structure.color || '#3b82f6');
+            
+            const headerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            headerText.setAttribute('x', '90');
+            headerText.setAttribute('y', '17');
+            headerText.setAttribute('text-anchor', 'middle');
+            headerText.setAttribute('fill', 'white');
+            headerText.setAttribute('font-size', '12');
+            headerText.setAttribute('font-weight', 'bold');
+            headerText.textContent = structure.name;
+            
+            headerGroup.appendChild(headerRect);
+            headerGroup.appendChild(headerText);
+            group.appendChild(headerGroup);
+            
+            // Create properties
+            structure.properties.slice(0, 5).forEach((prop, index) => {
+                const propGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                propGroup.setAttribute('transform', `translate(10, ${45 + index * 12})`);
+                
+                const propText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                propText.setAttribute('x', '0');
+                propText.setAttribute('y', '0');
+                propText.setAttribute('fill', prop.primaryKey ? '#3b82f6' : prop.foreignKey ? '#f59e0b' : '#64748b');
+                propText.setAttribute('font-size', '10');
+                propText.setAttribute('font-weight', prop.primaryKey ? 'bold' : 'normal');
+                
+                let propSymbol = '';
+                if (prop.primaryKey) propSymbol = '🔑 ';
+                else if (prop.foreignKey) propSymbol = '🔗 ';
+                else propSymbol = '• ';
+                
+                propText.textContent = propSymbol + prop.name;
+                
+                propGroup.appendChild(propText);
+                group.appendChild(propGroup);
+            });
+            
+            // Add more properties indicator if needed
+            if (structure.properties.length > 5) {
+                const moreGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                moreGroup.setAttribute('transform', `translate(10, ${45 + 5 * 12})`);
+                
+                const moreText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                moreText.setAttribute('x', '0');
+                moreText.setAttribute('y', '0');
+                moreText.setAttribute('fill', '#94a3b8');
+                moreText.setAttribute('font-size', '10');
+                moreText.setAttribute('font-style', 'italic');
+                moreText.textContent = `... +${structure.properties.length - 5} more`;
+                
+                moreGroup.appendChild(moreText);
+                group.appendChild(moreGroup);
+            }
+            
+            svg.appendChild(group);
+        }
+
+        function renderRelationship(svg, relationship, diagramData) {
+            const fromStructure = relationship.from === diagramData.mainStructure.id ? 
+                diagramData.mainStructure : 
+                diagramData.relatedStructures.find(s => s.id === relationship.from);
+            
+            const toStructure = relationship.to === diagramData.mainStructure.id ? 
+                diagramData.mainStructure : 
+                diagramData.relatedStructures.find(s => s.id === relationship.to);
+            
+            if (!fromStructure || !toStructure) return;
+            
+            // Calculate line coordinates
+            const fromX = fromStructure.position.x + 100;
+            const fromY = fromStructure.position.y + 60;
+            const toX = toStructure.position.x + 100;
+            const toY = toStructure.position.y + 60;
+            
+            // Create relationship line
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', fromX);
+            line.setAttribute('y1', fromY);
+            line.setAttribute('x2', toX);
+            line.setAttribute('y2', toY);
+            line.setAttribute('stroke', '#3b82f6');
+            line.setAttribute('stroke-width', '2');
+            line.setAttribute('marker-end', 'url(#arrowhead)');
+            
+            svg.appendChild(line);
+            
+            // Create relationship label
+            const labelGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            const midX = (fromX + toX) / 2;
+            const midY = (fromY + toY) / 2;
+            
+            const labelRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            labelRect.setAttribute('x', midX - 30);
+            labelRect.setAttribute('y', midY - 10);
+            labelRect.setAttribute('width', '60');
+            labelRect.setAttribute('height', '20');
+            labelRect.setAttribute('rx', '10');
+            labelRect.setAttribute('fill', '#f8fafc');
+            labelRect.setAttribute('stroke', '#3b82f6');
+            labelRect.setAttribute('stroke-width', '1');
+            
+            const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            labelText.setAttribute('x', midX);
+            labelText.setAttribute('y', midY + 5);
+            labelText.setAttribute('text-anchor', 'middle');
+            labelText.setAttribute('fill', '#3b82f6');
+            labelText.setAttribute('font-size', '10');
+            labelText.setAttribute('font-weight', 'bold');
+            labelText.textContent = relationship.label || relationship.type;
+            
+            labelGroup.appendChild(labelRect);
+            labelGroup.appendChild(labelText);
+            svg.appendChild(labelGroup);
+        }
+
+        // ===== FUNÇÕES PARA ESTATÍSTICAS CUSTOMIZADAS =====
+        
+        function populateCustomStatsBuilder(properties) {
+            const xAxisSelect = document.getElementById('xAxisSelect');
+            const yAxisSelect = document.getElementById('yAxisSelect');
+            
+            // Clear existing options
+            xAxisSelect.innerHTML = '<option value="">Select Property</option>';
+            yAxisSelect.innerHTML = '<option value="">Select Property</option>';
+            
+            // Populate with available properties
+            properties.forEach(prop => {
+                const xOption = document.createElement('option');
+                xOption.value = prop.id;
+                xOption.textContent = `${prop.name} (${prop.type})`;
+                xAxisSelect.appendChild(xOption);
+                
+                const yOption = document.createElement('option');
+                yOption.value = prop.id;
+                yOption.textContent = `${prop.name} (${prop.type})`;
+                yAxisSelect.appendChild(yOption);
+            });
+            
+            // Update Y-axis visibility based on chart type
+            updateYAxisVisibility();
+        }
+
+        function updateYAxisVisibility() {
+            const chartType = document.getElementById('chartTypeSelect').value;
+            const yAxisField = document.getElementById('yAxisField');
+            const yAxisSelect = document.getElementById('yAxisSelect');
+            
+            if (chartType === 'single-value' || chartType === 'progress') {
+                yAxisField.style.display = 'none';
+                yAxisSelect.required = false;
+            } else {
+                yAxisField.style.display = 'block';
+                yAxisSelect.required = true;
+            }
+        }
+
+        // Add event listener for chart type changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartTypeSelect = document.getElementById('chartTypeSelect');
+            if (chartTypeSelect) {
+                chartTypeSelect.addEventListener('change', updateYAxisVisibility);
+            }
+        });
+
+        async function generateCustomChart() {
+            if (!currentStructure) {
+                showError('Please select a structure first');
+                return;
+            }
+
+            const chartType = document.getElementById('chartTypeSelect').value;
+            const xAxis = document.getElementById('xAxisSelect').value;
+            const yAxis = document.getElementById('yAxisSelect').value;
+            const aggregation = document.getElementById('aggregationSelect').value;
+
+            if (!xAxis) {
+                showError('Please select an X-axis property');
+                return;
+            }
+
+            if (chartType !== 'single-value' && chartType !== 'progress' && !yAxis) {
+                showError('Please select a Y-axis property for this chart type');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard/structure/${currentStructure}/custom-chart`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chartType,
+                        xAxis,
+                        yAxis,
+                        aggregation
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderCustomChart(data.data);
+                } else {
+                    showError('Error generating chart: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error generating custom chart:', error);
+                showError('Error generating custom chart: ' + error.message);
+            }
+        }
+
+        function renderCustomChart(chartData) {
+            const container = document.getElementById('customChartResult');
+            container.style.display = 'block';
+            container.innerHTML = '';
+
+            switch (chartData.chartType) {
+                case 'single-value':
+                    renderSingleValueCard(container, chartData.data);
+                    break;
+                case 'progress':
+                    renderProgressCard(container, chartData.data);
+                    break;
+                case 'bar':
+                case 'line':
+                case 'scatter':
+                    renderXYChart(container, chartData.data, chartData.chartType);
+                    break;
+                case 'pie':
+                case 'doughnut':
+                    renderCategoricalChart(container, chartData.data, chartData.chartType);
+                    break;
+                default:
+                    container.innerHTML = '<div class="error">Unsupported chart type</div>';
+            }
+        }
+
+        function renderSingleValueCard(container, data) {
+            const card = document.createElement('div');
+            card.className = 'single-value-card';
+            card.innerHTML = `
+                <div class="single-value-number">
+                    ${data.value}${data.unit ? ' ' + data.unit : ''}
+                </div>
+                <div class="single-value-label">${data.label}</div>
+                <div class="single-value-change ${data.change === '+' ? 'change-positive' : 'change-negative'}">
+                    ${data.change}${data.changeValue} ${data.changeLabel}
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        function renderProgressCard(container, data) {
+            const card = document.createElement('div');
+            card.className = 'progress-card';
+            card.innerHTML = `
+                <div class="progress-header">
+                    <div class="progress-label">${data.label}</div>
+                    <div class="progress-values">
+                        ${data.current}${data.unit ? ' ' + data.unit : ''} / ${data.total}${data.unit ? ' ' + data.unit : ''}
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar progress-${data.status}" style="width: ${data.percentage}%">
+                        ${data.percentage}%
+                    </div>
+                </div>
+                <div class="progress-percentage">${data.percentage}%</div>
+            `;
+            container.appendChild(card);
+        }
+
+        function renderXYChart(container, data, chartType) {
+            const chartContainer = document.createElement('div');
+            chartContainer.className = 'chart-container';
+            chartContainer.style.height = '400px';
+            
+            const canvas = document.createElement('canvas');
+            canvas.id = 'custom-chart-canvas';
+            chartContainer.appendChild(canvas);
+            container.appendChild(chartContainer);
+            
+            // Create chart using Chart.js
+            setTimeout(() => {
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: chartType,
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${data.yAxisLabel} by ${data.xAxisLabel}`
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: data.xAxisLabel
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: data.yAxisLabel
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
+
+        function renderCategoricalChart(container, data, chartType) {
+            const chartContainer = document.createElement('div');
+            chartContainer.className = 'chart-container';
+            chartContainer.style.height = '400px';
+            
+            const canvas = document.createElement('canvas');
+            canvas.id = 'custom-chart-canvas';
+            chartContainer.appendChild(canvas);
+            container.appendChild(chartContainer);
+            
+            // Create chart using Chart.js
+            setTimeout(() => {
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: chartType,
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: data.propertyName
+                            }
+                        }
+                    }
+                });
+            }, 100);
+        }
     </script>
 </body>
 </html>
