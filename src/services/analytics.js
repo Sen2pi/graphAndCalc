@@ -21,16 +21,26 @@ class AnalyticsService {
         recentActivity: []
       };
 
-      // Usar apenas os dados disponíveis da API (sem tentar buscar objetos)
+      // Buscar objetos para cada estrutura para obter contagens reais
       if (spaceInfo.structures && Array.isArray(spaceInfo.structures)) {
         for (const structure of spaceInfo.structures) {
-          // Como não podemos contar objetos ainda, vamos usar dados básicos
+          let objectCount = 0;
+          try {
+            // Tentar obter objetos da estrutura para contar
+            const objects = await this.api.getObjectsByStructure(structure.id, 1000);
+            objectCount = objects.objects?.length || 0;
+          } catch (error) {
+            console.warn(`Erro ao contar objetos da estrutura ${structure.id}:`, error.message);
+          }
+          
           stats.structures[structure.id] = {
             name: structure.name || structure.id,
-            count: 0, // Não disponível ainda
+            count: objectCount,
             type: structure.type || 'unknown',
             id: structure.id
           };
+          
+          stats.totalObjects += objectCount;
           
                   // Usar o título real da API, com fallback para nomes conhecidos
         if (structure.title) {
@@ -254,19 +264,22 @@ class AnalyticsService {
         structures: {}
       };
 
-      // Analisar cada estrutura individualmente
-      for (const [structureId, structure] of Object.entries(spaceStats.structures)) {
-        if (structure.count > 0) {
-          try {
-            reports.structures[structureId] = {
-              basic: structure,
-              numericProperties: await this.analyzeNumericProperties(structureId),
-              references: await this.analyzeObjectReferences(structureId),
-              temporal: await this.analyzeTemporalActivity(structureId)
-            };
-          } catch (error) {
-            console.warn(`Erro ao analisar estrutura ${structureId}:`, error.message);
-          }
+      // Analisar estruturas com mais objetos primeiro (otimização)
+      const structuresWithData = Object.entries(spaceStats.structures)
+        .filter(([,structure]) => structure.count > 0)
+        .sort(([,a], [,b]) => b.count - a.count)
+        .slice(0, 10); // Limitar a 10 estruturas para evitar timeout
+      
+      for (const [structureId, structure] of structuresWithData) {
+        try {
+          reports.structures[structureId] = {
+            basic: structure,
+            numericProperties: await this.analyzeNumericProperties(structureId),
+            references: await this.analyzeObjectReferences(structureId),
+            temporal: await this.analyzeTemporalActivity(structureId)
+          };
+        } catch (error) {
+          console.warn(`Erro ao analisar estrutura ${structureId}:`, error.message);
         }
       }
 

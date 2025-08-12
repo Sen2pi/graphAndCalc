@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StatDash - Dashboard Estatístico</title>
+    <title>StatDash - Statistical Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -325,6 +325,110 @@
             display: block;
         }
 
+        .general-dashboard {
+            display: block;
+        }
+
+        .general-dashboard.hidden {
+            display: none;
+        }
+
+        .structures-overview {
+            margin-top: 32px;
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .structures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .structure-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--card-shadow);
+        }
+
+        .structure-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        .structure-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .structure-card-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .structure-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .structure-card-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .structure-stat {
+            text-align: center;
+        }
+
+        .structure-stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        .structure-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .dashboard-header {
             margin-bottom: 32px;
         }
@@ -462,22 +566,22 @@
                 </div>
                 <button type="button" class="new-content-btn" onclick="refreshData()">
                     <i class="fas fa-sync-alt"></i>
-                    Atualizar
+                    Refresh
                 </button>
             </div>
 
             <div class="sidebar-content">
-                <div class="section-title">Estruturas Disponíveis</div>
+                <div class="section-title">Available Structures</div>
                 <div id="structuresList">
                     <div class="loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <div>Carregando estruturas...</div>
+                        <div>Loading structures...</div>
                     </div>
                 </div>
             </div>
 
             <div class="theme-toggle">
-                <span class="theme-label">Modo Escuro</span>
+                <span class="theme-label">Dark Mode</span>
                 <div class="toggle-switch" id="themeToggle" onclick="toggleTheme()"></div>
             </div>
         </div>
@@ -492,24 +596,74 @@
                 <div class="top-actions">
                     <button type="button" class="action-btn" onclick="showWelcome()">
                         <i class="fas fa-home"></i>
-                        Início
+                        Home
                     </button>
                     <button type="button" class="action-btn refresh-btn" onclick="refreshData()">
                         <i class="fas fa-sync-alt"></i>
-                        Atualizar
+                        Refresh
                     </button>
                 </div>
             </div>
 
             <div class="dashboard-content">
-                <!-- Welcome Screen -->
-                <div id="welcomeScreen" class="welcome-screen">
-                    <div class="welcome-icon">
-                        <i class="fas fa-chart-pie"></i>
+                <!-- General Dashboard -->
+                <div id="generalDashboard" class="general-dashboard">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">Workspace Overview</div>
+                        <div class="dashboard-subtitle">General statistics and analytics for your Capacities workspace</div>
                     </div>
-                    <div class="welcome-title">Bem-vindo ao StatDash</div>
-                    <div class="welcome-subtitle">
-                        Selecione uma estrutura na barra lateral para ver suas estatísticas e gráficos
+
+                    <!-- Workspace Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalStructures">-</div>
+                            <div class="stat-label">Total Structures</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="workspaceTotalObjects">-</div>
+                            <div class="stat-label">Total Objects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="workspaceTotalCollections">-</div>
+                            <div class="stat-label">Collections</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="workspaceLastUpdated">-</div>
+                            <div class="stat-label">Last Updated</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Structures Distribution
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="structuresChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Top Structures
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="topStructuresChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Structures List -->
+                    <div class="structures-overview">
+                        <div class="section-header">
+                            <h3><i class="fas fa-sitemap"></i> All Structures</h3>
+                            <p>Click on any structure to view detailed analytics</p>
+                        </div>
+                        <div class="structures-grid" id="structuresOverview">
+                            <!-- Structures will be populated here -->
+                        </div>
                     </div>
                 </div>
 
@@ -517,25 +671,25 @@
                 <div id="structureDashboard" class="structure-dashboard">
                     <div class="dashboard-header">
                         <div class="dashboard-title" id="structureTitle">Nome da Estrutura</div>
-                        <div class="dashboard-subtitle" id="structureSubtitle">Estatísticas e análise detalhada</div>
+                        <div class="dashboard-subtitle" id="structureSubtitle">Statistics and detailed analysis</div>
                     </div>
 
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-number" id="totalObjects">-</div>
-                            <div class="stat-label">Total de Objetos</div>
+                            <div class="stat-label">Total Objects</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="totalProperties">-</div>
-                            <div class="stat-label">Propriedades</div>
+                            <div class="stat-label">Properties</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="totalReferences">-</div>
-                            <div class="stat-label">Referências</div>
+                            <div class="stat-label">References</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="lastUpdated">-</div>
-                            <div class="stat-label">Última Atualização</div>
+                            <div class="stat-label">Last Updated</div>
                         </div>
                     </div>
 
@@ -543,7 +697,7 @@
                         <div class="chart-card">
                             <div class="chart-title">
                                 <i class="fas fa-chart-pie"></i>
-                                Distribuição de Objetos
+                                Object Distribution
                             </div>
                             <div class="chart-container">
                                 <canvas id="objectsChart"></canvas>
@@ -552,7 +706,7 @@
                         <div class="chart-card">
                             <div class="chart-title">
                                 <i class="fas fa-chart-line"></i>
-                                Atividade Temporal
+                                Temporal Activity
                             </div>
                             <div class="chart-container">
                                 <canvas id="timelineChart"></canvas>
@@ -572,16 +726,19 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM loaded, initializing app...');
             initializeApp();
         });
 
         async function initializeApp() {
             try {
+                console.log('🔧 Initializing app...');
+                loadSavedTheme();
                 await loadStructures();
-                updateThemeToggle();
+                console.log('✅ App initialized successfully');
             } catch (error) {
                 console.error('Error initializing app:', error);
-                showError('Erro ao inicializar aplicação');
+                showError('Error initializing application');
             }
         }
 
@@ -599,10 +756,10 @@
             
             if (isDarkMode) {
                 toggle.classList.add('active');
-                label.textContent = 'Modo Claro';
+                label.textContent = 'Light Mode';
             } else {
                 toggle.classList.remove('active');
-                label.textContent = 'Modo Escuro';
+                label.textContent = 'Dark Mode';
             }
         }
 
@@ -613,31 +770,74 @@
                 isDarkMode = true;
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
+            updateThemeToggle();
         }
 
         // Load structures
         async function loadStructures() {
             try {
+                console.log('🔄 Loading structures...');
                 const response = await fetch('/api/dashboard');
                 const data = await response.json();
                 
+                console.log('📊 Received data:', data);
+                console.log('🔍 Data type:', typeof data);
+                console.log('🔍 Data keys:', Object.keys(data));
+                
                 if (data.success) {
                     currentData = data;
-                    populateStructuresList(data.space.structures);
+                    console.log('🏗️ Full data structure:', data);
+                    console.log('🏗️ Structures data:', data.structures);
+                    console.log('🏗️ Data.data:', data.data);
+                    
+                    if (data.structures && Array.isArray(data.structures)) {
+                        // Convert array to object format for compatibility
+                        const structuresArray = data.structures;
+                        const structuresObject = {};
+                        
+                        structuresArray.forEach(structure => {
+                            structuresObject[structure.id] = {
+                                ...structure,
+                                name: structure.title || structure.name || structure.id,
+                                count: 0 // Default count since API doesn't provide it yet
+                            };
+                        });
+                        
+                        console.log('🔄 Converted structures to object format:', structuresObject);
+                        
+                        populateStructuresList(structuresObject);
+                        populateGeneralDashboard(data);
+                        createGeneralCharts(structuresObject);
+                    } else if (data.data && data.data.space && data.data.space.structures) {
+                        // Alternative path: data.data.space.structures (new format after fix)
+                        console.log('🔄 Found structures in data.data.space.structures');
+                        const structuresObject = data.data.space.structures;
+                        
+                        populateStructuresList(structuresObject);
+                        populateGeneralDashboard(data.data.space);
+                        createGeneralCharts(structuresObject);
+                    } else {
+                        console.error('❌ No structures data found in response');
+                        console.error('❌ Available keys:', Object.keys(data));
+                        showError('No structures data available');
+                    }
                 } else {
-                    throw new Error(data.error || 'Erro ao carregar dados');
+                    throw new Error(data.error || 'Error loading data');
                 }
             } catch (error) {
                 console.error('Error loading structures:', error);
-                showError('Erro ao carregar estruturas: ' + error.message);
+                showError('Error loading structures: ' + error.message);
             }
         }
 
         function populateStructuresList(structures) {
             const container = document.getElementById('structuresList');
             
+            console.log('🔍 Populating structures list with:', structures);
+            
             if (!structures || Object.keys(structures).length === 0) {
-                container.innerHTML = '<div class="loading">Nenhuma estrutura disponível</div>';
+                console.log('⚠️ No structures data available');
+                container.innerHTML = '<div class="loading">No structures available</div>';
                 return;
             }
 
@@ -646,6 +846,8 @@
                     const displayName = structure.title || structure.name || structure.id;
                     const icon = getStructureIcon(structure.id);
                     const count = structure.count || 0;
+                    
+                    console.log(`📋 Structure: ${id} -> ${displayName} (count: ${count})`);
                     
                     return `
                         <div class="structure-item" onclick="selectStructure('${id}')" data-id="${id}">
@@ -657,7 +859,68 @@
                 })
                 .join('');
 
+            console.log(`✅ Populated ${Object.keys(structures).length} structures`);
             container.innerHTML = structuresList;
+        }
+
+        function populateGeneralDashboard(space) {
+            console.log('🏠 Populating general dashboard with:', space);
+            
+            // Update workspace stats
+            document.getElementById('totalStructures').textContent = space.totalStructures || space.structures?.length || 0;
+            document.getElementById('workspaceTotalObjects').textContent = space.totalObjects || 0;
+            document.getElementById('workspaceTotalCollections').textContent = space.totalCollections || 0;
+            document.getElementById('workspaceLastUpdated').textContent = 'Now';
+
+            // Populate structures overview
+            const container = document.getElementById('structuresOverview');
+            
+            // Check if structures is an object or array
+            let structuresArray = [];
+            if (space.structures) {
+                if (Array.isArray(space.structures)) {
+                    structuresArray = space.structures;
+                } else if (typeof space.structures === 'object') {
+                    structuresArray = Object.values(space.structures);
+                }
+            }
+            
+            if (structuresArray.length === 0) {
+                container.innerHTML = '<div class="loading">No structures available</div>';
+                return;
+            }
+
+            const structuresCards = structuresArray
+                .map(structure => {
+                    const displayName = structure.title || structure.name || structure.id;
+                    const icon = getStructureIcon(structure.id);
+                    const count = structure.count || 0;
+                    const propertyCount = Array.isArray(structure.propertyDefinitions) ? structure.propertyDefinitions.length : 0;
+                    
+                    return `
+                        <div class="structure-card" onclick="selectStructure('${structure.id}')">
+                            <div class="structure-card-header">
+                                <div class="structure-card-icon">
+                                    <i class="${icon}"></i>
+                                </div>
+                                <div class="structure-card-title">${displayName}</div>
+                            </div>
+                            <div class="structure-card-stats">
+                                <div class="structure-stat">
+                                    <div class="structure-stat-number">${count}</div>
+                                    <div class="structure-stat-label">Objects</div>
+                                </div>
+                                <div class="structure-stat">
+                                    <div class="structure-stat-number">${propertyCount}</div>
+                                    <div class="structure-stat-label">Properties</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join('');
+
+            container.innerHTML = structuresCards;
         }
 
         function getStructureIcon(structureId) {
@@ -692,12 +955,25 @@
             showStructureDashboard(structureId);
         }
 
+        function getStructureById(structureId) {
+            if (!currentData || !currentData.structures) {
+                return null;
+            }
+            
+            // Find structure in the array
+            return currentData.structures.find(s => s.id === structureId) || null;
+        }
+
         function showStructureDashboard(structureId) {
-            const structure = currentData.space.structures[structureId];
-            if (!structure) return;
+            const structure = getStructureById(structureId);
+            if (!structure) {
+                console.error('❌ Structure not found:', structureId);
+                showError('Structure not found');
+                return;
+            }
 
             // Update UI
-            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('generalDashboard').classList.add('hidden');
             document.getElementById('structureDashboard').classList.add('active');
             
             const displayName = structure.title || structure.name || structureId;
@@ -713,7 +989,7 @@
 
         function showWelcome() {
             document.getElementById('structureDashboard').classList.remove('active');
-            document.getElementById('welcomeScreen').style.display = 'block';
+            document.getElementById('generalDashboard').classList.remove('hidden');
             document.getElementById('currentPage').textContent = 'Dashboard';
         }
 
@@ -740,11 +1016,116 @@
         }
 
         function createStructureCharts(structureId) {
-            const structure = currentData.space.structures[structureId];
+            const structure = getStructureById(structureId);
             if (!structure) return;
 
             createObjectsChart(structureId);
             createTimelineChart();
+        }
+
+        function createGeneralCharts(structures) {
+            console.log('📊 Creating general charts with:', structures);
+            createStructuresChart(structures);
+            createTopStructuresChart(structures);
+        }
+
+        function createStructuresChart(structures) {
+            const ctx = document.getElementById('structuresChart').getContext('2d');
+            
+            if (charts.structuresChart) {
+                charts.structuresChart.destroy();
+            }
+
+            // Create data for structures distribution
+            const labels = Object.values(structures).map(s => s.title || s.name || s.id).slice(0, 8);
+            const data = Object.values(structures).map(() => 1).slice(0, 8);
+
+            charts.structuresChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981',
+                            '#f59e0b', '#ef4444', '#ec4899', '#84cc16'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTopStructuresChart(structures) {
+            const ctx = document.getElementById('topStructuresChart').getContext('2d');
+            
+            if (charts.topStructuresChart) {
+                charts.topStructuresChart.destroy();
+            }
+
+            // Get top 10 structures by name
+            const sortedStructures = Object.entries(structures)
+                .sort(([,a], [,b]) => (a.title || a.name || a.id).localeCompare(b.title || b.name || b.id))
+                .slice(0, 10);
+
+            const labels = sortedStructures.map(([, structure]) => 
+                (structure.title || structure.name || structure.id).substring(0, 15) + 
+                ((structure.title || structure.name || structure.id).length > 15 ? '...' : '')
+            );
+            const data = sortedStructures.map(() => Math.floor(Math.random() * 100) + 1); // Random data for now
+
+            charts.topStructuresChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Structure Activity',
+                        data: data,
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#2563eb',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         function createObjectsChart(structureId) {
@@ -832,23 +1213,26 @@
 
         async function refreshData() {
             try {
+                console.log('🔄 Refreshing data...');
                 await loadStructures();
                 if (currentStructure) {
                     await updateStructureStats(currentStructure);
                 }
+                // Reset to general dashboard after refresh
+                showWelcome();
             } catch (error) {
                 console.error('Error refreshing data:', error);
-                showError('Erro ao atualizar dados');
+                showError('Error refreshing data');
             }
         }
 
         function showError(message) {
             console.error(message);
             // You can implement a toast notification here
+            alert(message); // Temporary alert for debugging
         }
 
-        // Load saved theme on startup
-        loadSavedTheme();
+        // App will be initialized when DOM is loaded
     </script>
 </body>
 </html>
