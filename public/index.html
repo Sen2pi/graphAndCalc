@@ -1064,7 +1064,7 @@
                             structuresObject[structure.id] = {
                                 ...structure,
                                 name: structure.title || structure.name || structure.id,
-                                count: structure.count || 0
+                                count: structure.count || structure.objectCount || 0
                             };
                         });
                         
@@ -1208,6 +1208,9 @@
                 'MediaVideo': 'fas fa-video',
                 'MediaWebResource': 'fas fa-link',
                 'MediaFile': 'fas fa-file',
+                'd2801ef5-bb7b-4ba0-8da7-b0f55453059d': 'fas fa-user', // Pessoa
+                '1fcab184-7c08-4b2e-8e6b-e28b0e489b91': 'fas fa-graduation-cap', // Unidade Curricular
+                'd6175362-1a4a-4098-8d59-9bbbacc5a45e': 'fas fa-book', // Curso
                 'default': 'fas fa-cube'
             };
             
@@ -1359,6 +1362,19 @@
         
         // Generate mock properties based on structure type
         async function getMockPropertiesForStructure(structureId) {
+            // Tentar obter propriedades reais primeiro
+            try {
+                const structureResponse = await fetch(`/api/dashboard/structure/${structureId}`);
+                const structureData = await structureResponse.json();
+                
+                if (structureData.success && structureData.data && structureData.data.properties) {
+                    return structureData.data.properties;
+                }
+            } catch (error) {
+                console.warn('Could not load real properties, using fallback:', error.message);
+            }
+            
+            // Fallback para propriedades padrão
             const commonProperties = [
                 { id: 'title', name: 'Title', type: 'text', description: 'The title of the item' },
                 { id: 'description', name: 'Description', type: 'richText', description: 'Detailed description' },
@@ -1415,6 +1431,9 @@
             const propertiesHTML = properties.map(property => {
                 const typeIcon = getPropertyTypeIcon(property.type);
                 const typeClass = getPropertyTypeClass(property.type);
+                const propertyName = property.name || property.id || 'Unknown Property';
+                const propertyType = property.type?.toUpperCase() || 'UNKNOWN';
+                const propertyDescription = property.description || 'No description available';
                 
                 return `
                     <div class="property-item" data-property-id="${property.id}" onclick="toggleProperty('${property.id}')">
@@ -1425,9 +1444,9 @@
                             <i class="${typeIcon}"></i>
                         </div>
                         <div class="property-info">
-                            <div class="property-name">${property.name}</div>
-                            <div class="property-type ${typeClass}">${property.type?.toUpperCase() || 'UNKNOWN'}</div>
-                            <div class="property-description">${property.description || 'No description available'}</div>
+                            <div class="property-name">${propertyName}</div>
+                            <div class="property-type ${typeClass}">${propertyType}</div>
+                            <div class="property-description">${propertyDescription}</div>
                         </div>
                     </div>
                 `;
@@ -1445,16 +1464,22 @@
             }
 
             const relationshipsHTML = relationships.map(relationship => {
+                const targetStructure = relationship.targetStructure || {};
+                const targetName = targetStructure.title || targetStructure.name || 'Unknown Structure';
+                const relationshipType = relationship.type || 'Unknown';
+                const relationshipDirection = relationship.direction || 'Unknown';
+                const relationshipDescription = relationship.description || '';
+                
                 return `
                     <div class="relationship-item">
                         <div class="relationship-header">
                             <i class="fas fa-link"></i>
-                            <span class="relationship-title">${relationship.targetStructure?.title || relationship.targetStructure?.name || 'Unknown Structure'}</span>
+                            <span class="relationship-title">${targetName}</span>
                         </div>
                         <div class="relationship-details">
-                            <div class="relationship-type">${relationship.type || 'Unknown'}</div>
-                            <div class="relationship-direction">${relationship.direction || 'Unknown'}</div>
-                            ${relationship.description ? `<div class="relationship-description">${relationship.description}</div>` : ''}
+                            <div class="relationship-type">${relationshipType}</div>
+                            <div class="relationship-direction">${relationshipDirection}</div>
+                            ${relationshipDescription ? `<div class="relationship-description">${relationshipDescription}</div>` : ''}
                         </div>
                     </div>
                 `;
@@ -1584,7 +1609,30 @@
             try {
                 console.log(`📊 Generating statistics for properties:`, Array.from(selectedProperties));
                 
-                // Generate mock statistics until server is updated
+                // Tentar gerar estatísticas reais primeiro
+                try {
+                    const response = await fetch(`/api/dashboard/structure/${currentStructure}/statistics`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            selectedProperties: Array.from(selectedProperties)
+                        })
+                    });
+                    
+                    const statisticsData = await response.json();
+                    
+                    if (statisticsData.success) {
+                        console.log('📈 Statistics generated (real):', statisticsData.data);
+                        displayStatisticsResults(statisticsData.data);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn('Could not generate real statistics, using mock data:', error.message);
+                }
+                
+                // Fallback para estatísticas simuladas
                 const mockStatistics = await generateMockStatistics(Array.from(selectedProperties));
                 
                 console.log('📈 Statistics generated (mock):', mockStatistics);
@@ -1611,7 +1659,8 @@
                 selectedProperties: selectedPropertiesDetails,
                 propertyStatistics: {},
                 relationships: [],
-                mockData: true
+                mockData: true, // Marcar como dados simulados
+                realData: false
             };
             
             // Generate statistics for each selected property
@@ -1709,20 +1758,27 @@
             resultsContainer.style.display = 'block';
             
             // Generate charts for each selected property
-            statisticsData.selectedProperties.forEach(property => {
-                const propertyStats = statisticsData.propertyStatistics[property.id];
-                if (propertyStats) {
-                    const chartCard = createStatisticsChart(property, propertyStats);
-                    chartsContainer.appendChild(chartCard);
-                }
-            });
+            if (statisticsData.selectedProperties && Array.isArray(statisticsData.selectedProperties)) {
+                statisticsData.selectedProperties.forEach(property => {
+                    const propertyStats = statisticsData.propertyStatistics?.[property.id];
+                    if (propertyStats) {
+                        const chartCard = createStatisticsChart(property, propertyStats);
+                        chartsContainer.appendChild(chartCard);
+                    }
+                });
+            }
             
-            // Show mock data indicator
+            // Show mock data indicator if applicable
             if (statisticsData.mockData) {
                 const mockIndicator = document.createElement('div');
                 mockIndicator.style.cssText = 'background: #fef3c7; color: #92400e; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
                 mockIndicator.innerHTML = '<i class="fas fa-info-circle"></i> Note: These are simulated statistics for demonstration purposes';
                 resultsContainer.insertBefore(mockIndicator, chartsContainer);
+            } else if (statisticsData.realData) {
+                const realIndicator = document.createElement('div');
+                realIndicator.style.cssText = 'background: #d1fae5; color: #065f46; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
+                realIndicator.innerHTML = '<i class="fas fa-check-circle"></i> These are real statistics from your data';
+                resultsContainer.insertBefore(realIndicator, chartsContainer);
             }
         }
 
@@ -1732,7 +1788,7 @@
             chartCard.innerHTML = `
                 <div class="chart-title">
                     <i class="${getPropertyTypeIcon(property.type)}"></i>
-                    ${property.name} (${property.type})
+                    ${property.name} (${property.type?.toUpperCase() || 'UNKNOWN'})
                 </div>
                 <div class="chart-container">
                     <canvas id="chart-${property.id}"></canvas>
@@ -1748,109 +1804,162 @@
         }
 
         function createPropertyChart(propertyId, property, stats) {
-            const ctx = document.getElementById(`chart-${propertyId}`).getContext('2d');
+            const canvas = document.getElementById(`chart-${propertyId}`);
+            if (!canvas) return;
             
-            // Destroy existing chart if it exists
-            if (charts[`chart-${propertyId}`]) {
-                charts[`chart-${propertyId}`].destroy();
+            const ctx = canvas.getContext('2d');
+            const chartType = getChartTypeForProperty(property.type, stats);
+            
+            try {
+                new Chart(ctx, {
+                    type: chartType,
+                    data: getChartData(property, stats, chartType),
+                    options: getChartOptions(chartType, property.name)
+                });
+            } catch (error) {
+                console.error(`Error creating chart for property ${propertyId}:`, error);
+                // Show error message in chart container
+                canvas.parentElement.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>Error creating chart</div>
+                        <div style="font-size: 12px;">${error.message}</div>
+                    </div>
+                `;
             }
+        }
 
-            let chartConfig = {};
+        function getChartTypeForProperty(propertyType, stats) {
+            if (stats.type === 'numeric' || propertyType === 'number' || propertyType === 'currency') {
+                return 'bar';
+            } else if (stats.type === 'temporal' || propertyType === 'date' || propertyType === 'dateTime') {
+                return 'line';
+            } else if (stats.type === 'categorical' || propertyType === 'select' || propertyType === 'multiSelect') {
+                return 'doughnut';
+            } else {
+                return 'bar';
+            }
+        }
 
-            switch (stats.type) {
-                case 'numeric':
-                    chartConfig = {
-                        type: 'bar',
-                        data: {
-                            labels: stats.distribution.map(d => d.range),
+        function getChartData(property, stats, chartType) {
+            switch (chartType) {
+                case 'bar':
+                    if (stats.distribution) {
+                        return {
+                            labels: stats.distribution.map(d => d.range || d.value),
                             datasets: [{
-                                label: 'Distribution',
+                                label: property.name,
                                 data: stats.distribution.map(d => d.count),
-                                backgroundColor: '#3b82f6',
-                                borderColor: '#2563eb',
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
                                 borderWidth: 1
                             }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: `Average: ${stats.average} | Range: ${stats.min} - ${stats.max}`
-                                }
-                            }
-                        }
-                    };
-                    break;
-
-                case 'categorical':
-                    chartConfig = {
-                        type: 'doughnut',
-                        data: {
+                        };
+                    } else {
+                        return {
+                            labels: ['Data'],
+                            datasets: [{
+                                label: property.name,
+                                data: [stats.totalEntries || 0],
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                    }
+                    
+                case 'line':
+                    if (stats.timelineData) {
+                        return {
+                            labels: stats.timelineData.map(d => d.month),
+                            datasets: [{
+                                label: property.name,
+                                data: stats.timelineData.map(d => d.count),
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        };
+                    } else {
+                        return {
+                            labels: ['Data'],
+                            datasets: [{
+                                label: property.name,
+                                data: [stats.totalEntries || 0],
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                fill: true
+                            }]
+                        };
+                    }
+                    
+                case 'doughnut':
+                    if (stats.distribution) {
+                        return {
                             labels: stats.distribution.map(d => d.value),
                             datasets: [{
                                 data: stats.distribution.map(d => d.count),
                                 backgroundColor: [
-                                    '#3b82f6', '#8b5cf6', '#06b6d4', '#10b981',
-                                    '#f59e0b', '#ef4444', '#ec4899', '#84cc16'
-                                ]
+                                    '#3B82F6', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B',
+                                    '#EF4444', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
+                                ],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
                             }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom'
-                                }
-                            }
-                        }
-                    };
-                    break;
-
-                case 'temporal':
-                    chartConfig = {
-                        type: 'line',
-                        data: {
-                            labels: stats.timelineData.map(d => d.month),
+                        };
+                    } else {
+                        return {
+                            labels: ['Data'],
                             datasets: [{
-                                label: 'Timeline',
-                                data: stats.timelineData.map(d => d.count),
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                fill: true,
-                                tension: 0.4
+                                data: [stats.totalEntries || 0],
+                                backgroundColor: ['#3B82F6'],
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
                             }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: `Range: ${stats.earliestDate} to ${stats.latestDate}`
-                                }
-                            }
-                        }
-                    };
-                    break;
-
+                        };
+                    }
+                    
                 default:
-                    // Simple info display for other types
-                    ctx.canvas.style.display = 'none';
-                    const container = ctx.canvas.parentElement;
-                    container.innerHTML = `
-                        <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
-                            <div style="font-size: 24px; margin-bottom: 8px;">${stats.totalEntries || 'N/A'}</div>
-                            <div>Total Entries</div>
-                            ${stats.message ? `<div style="margin-top: 12px; font-size: 12px;">${stats.message}</div>` : ''}
-                        </div>
-                    `;
-                    return;
+                    return {
+                        labels: ['Data'],
+                        datasets: [{
+                            label: property.name,
+                            data: [stats.totalEntries || 0],
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        }]
+                    };
             }
+        }
 
-            charts[`chart-${propertyId}`] = new Chart(ctx, chartConfig);
+        function getChartOptions(chartType, propertyName) {
+            const baseOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: chartType === 'doughnut',
+                        position: 'bottom'
+                    }
+                }
+            };
+            
+            if (chartType === 'bar' || chartType === 'line') {
+                baseOptions.scales = {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                };
+            }
+            
+            return baseOptions;
         }
 
         async function updateStructureStats(structureId) {
