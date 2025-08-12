@@ -39,7 +39,7 @@ Um dashboard estatístico completo para análise de dados do [Capacities](https:
 
 1. **Clone o repositório**
 ```bash
-git clone <seu-repositorio>
+git clone https://github.com/Sen2pi/graphAndCalc.git
 cd graphAndCalc
 ```
 

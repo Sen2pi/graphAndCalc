@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest"
+    "test": "jest",
+    "example": "node examples/example-usage.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
