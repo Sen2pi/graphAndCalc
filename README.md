@@ -96,113 +96,130 @@ npm run dev
 1. In the Capacities app, go to `Settings` > `Space settings`
 2. The Space ID will be displayed in the settings section
 
-## 📡 Endpoints da API
+## 📡 API Endpoints
 
-### Dashboard Principal
-- `GET /api/dashboard` - Relatório completo de análise
-- `GET /api/dashboard/space-stats` - Estatísticas gerais do espaço
+### 🎯 **Core Dashboard**
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/dashboard` | `GET` | Complete analysis report |
+| `/api/dashboard/space-stats` | `GET` | General workspace statistics |
 
-### Análise de Estruturas
-- `GET /api/dashboard/structure/:id` - Análise completa de uma estrutura
-- `GET /api/dashboard/structure/:id/numeric-properties` - Propriedades numéricas
-- `GET /api/dashboard/structure/:id/references` - Análise de referências
-- `GET /api/dashboard/structure/:id/temporal` - Atividade temporal
+### 🔍 **Structure Analysis**
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/dashboard/structure/:id` | `GET` | Complete structure analysis |
+| `/api/dashboard/structure/:id/numeric-properties` | `GET` | Numeric properties analysis |
+| `/api/dashboard/structure/:id/references` | `GET` | Object references analysis |
+| `/api/dashboard/structure/:id/temporal` | `GET` | Temporal activity analysis |
 
-### Comparações e Coleções
-- `GET /api/dashboard/compare?structureIds[]=id1&structureIds[]=id2` - Comparar estruturas
-- `GET /api/dashboard/collections` - Estatísticas de coleções
+### 🔄 **Comparison & Collections**
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/dashboard/compare` | `GET` | Compare multiple structures |
+| `/api/dashboard/collections` | `GET` | Collection statistics |
 
-### Utilitários
-- `GET /health` - Verificação de saúde da API
-- `GET /` - Informações da API
+### 🛠️ **Utilities**
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/health` | `GET` | API health check |
+| `/` | `GET` | API information |
 
-## 🌐 Interface Web
+## 🌐 Web Interface
 
-Acesse `http://localhost:3000/index.html` para usar a interface web completa.
+Access `http://localhost:3000/index.html` to use the complete web interface.
 
-### Funcionalidades da Interface
-- **Dashboard principal**: Visão geral com estatísticas e gráficos
-- **Seleção de estruturas**: Dropdown com todas as estruturas disponíveis
-- **Tipos de análise**: Escolha entre diferentes tipos de análise
-- **Gráficos interativos**: Visualizações responsivas e interativas
-- **Tabelas detalhadas**: Dados organizados em tabelas para análise detalhada
+### 🎨 **Interface Features**
+- **Main Dashboard**: Overview with statistics and charts
+- **Structure Selection**: Dropdown with all available structures
+- **Analysis Types**: Choose between different analysis types
+- **Interactive Charts**: Responsive and interactive visualizations
+- **Detailed Tables**: Data organized in tables for detailed analysis
 
-## 📊 Tipos de Análise
+## 📊 Analysis Types
 
-### 1. Visão Geral
-- Contagem total de objetos
-- Número de propriedades numéricas
-- Total de referências
-- Eventos temporais
+### 1️⃣ **Overview Analysis**
+- Total object count
+- Number of numeric properties
+- Total references
+- Temporal events
 
-### 2. Propriedades Numéricas
-- **Estatísticas descritivas**: Média, mediana, moda
-- **Medidas de dispersão**: Desvio padrão, variância
-- **Valores extremos**: Mínimo e máximo
-- **Contagem**: Número de objetos com cada propriedade
+### 2️⃣ **Numeric Properties**
+- **Descriptive Statistics**: Mean, median, mode
+- **Dispersion Measures**: Standard deviation, variance
+- **Extreme Values**: Minimum and maximum
+- **Count Analysis**: Number of objects per property
 
-### 3. Referências entre Objetos
-- **Mapeamento de conexões**: Quais objetos referenciam outros
-- **Contagem de referências**: Frequência de cada tipo de referência
-- **Análise de dependências**: Objetos mais referenciados
+### 3️⃣ **Object References**
+- **Connection Mapping**: Which objects reference others
+- **Reference Counting**: Frequency of each reference type
+- **Dependency Analysis**: Most referenced objects
 
-### 4. Atividade Temporal
-- **Criação de objetos**: Padrões de criação ao longo do tempo
-- **Modificações**: Frequência de atualizações
-- **Análise sazonal**: Padrões por dia, semana, mês
+### 4️⃣ **Temporal Activity**
+- **Object Creation**: Creation patterns over time
+- **Modifications**: Update frequency analysis
+- **Seasonal Analysis**: Daily, weekly, monthly patterns
 
-## 🔧 Desenvolvimento
+## 🔧 Development
 
-### Estrutura do Projeto
+### 📁 **Project Structure**
 ```
 src/
 ├── config/
-│   └── capacities.js      # Configuração da API Capacities
+│   └── capacities.js      # Capacities API configuration
 ├── services/
-│   └── analytics.js       # Serviço de análise de dados
+│   └── analytics.js       # Data analysis service
 ├── routes/
-│   └── dashboard.js       # Rotas da API
-└── index.js               # Servidor principal
+│   └── dashboard.js       # API routes
+└── index.js               # Main server
 
 public/
-└── index.html             # Interface web
+└── index.html             # Web interface
 
-env.example                # Exemplo de variáveis de ambiente
-package.json               # Dependências e scripts
-README.md                  # Esta documentação
+examples/
+└── example-usage.js       # Usage examples
+
+env.example                # Environment variables template
+package.json               # Dependencies and scripts
+README.md                  # This documentation
 ```
 
-### Scripts Disponíveis
+### 🚀 **Available Scripts**
 ```bash
-npm start          # Inicia o servidor
-npm run dev        # Inicia em modo desenvolvimento com nodemon
-npm test           # Executa os testes
+npm start          # Start the server
+npm run dev        # Start in development mode with nodemon
+npm test           # Run tests
+npm run example    # Run usage examples
 ```
 
-### Adicionando Novas Funcionalidades
+### ➕ **Adding New Features**
 
-1. **Novos endpoints**: Adicione em `src/routes/dashboard.js`
-2. **Novas análises**: Implemente em `src/services/analytics.js`
-3. **Novos gráficos**: Adicione na interface web em `public/index.html`
+1. **New endpoints**: Add to `src/routes/dashboard.js`
+2. **New analyses**: Implement in `src/services/analytics.js`
+3. **New charts**: Add to web interface in `public/index.html`
 
-## 📈 Exemplos de Uso
+## 📈 Usage Examples
 
-### Análise de uma Estrutura Específica
+### 🔍 **Structure Analysis**
 ```bash
 curl "http://localhost:3000/api/dashboard/structure/RootPage/numeric-properties" \
-  -H "Authorization: Bearer seu_token"
+  -H "Authorization: Bearer your_token"
 ```
 
-### Comparação entre Estruturas
+### 🔄 **Structure Comparison**
 ```bash
 curl "http://localhost:3000/api/dashboard/compare?structureIds[]=RootPage&structureIds[]=RootDatabase" \
-  -H "Authorization: Bearer seu_token"
+  -H "Authorization: Bearer your_token"
 ```
 
-### Estatísticas Gerais
+### 📊 **General Statistics**
 ```bash
 curl "http://localhost:3000/api/dashboard/space-stats" \
-  -H "Authorization: Bearer seu_token"
+  -H "Authorization: Bearer your_token"
+```
+
+### 🚀 **Run Examples Script**
+```bash
+npm run example
 ```
 
 ## 🚨 Limitações e Considerações
